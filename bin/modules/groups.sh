@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.4 - April 06, 2022
+# ## v1.5 - May 25, 2022
 
 
 # ############################################################################################
@@ -28,7 +28,7 @@ function groupCheck() {
 
  echo -n -e "\e[33m${grpRoot}\e[0m "
 
- if (("${nbrRoot}" <= '1' )); then
+ if (( "${nbrRoot}" <= 1 )); then
    echo -e "\e[32mOk\e[0m (${nbrRoot})"
    pass=$((pass+1))
  else
@@ -45,7 +45,7 @@ function groupCheck() {
 
  echo -n -e "\e[33m${grpSudo}\e[0m "
 
- if (("${nbrSudo}" <= '3' )); then
+ if (( "${nbrSudo}" <= 3 )); then
    echo -e "\e[32mOk\e[0m (${nbrSudo})"
    pass=$((pass+1))
  else
@@ -58,7 +58,7 @@ function groupCheck() {
  grpRestricted="$(awk -F':' '/restricted/{print $4}' /etc/group)"
  nbr=$(echo "${grpRestricted}" | awk -F ":" '{print $1}' | awk -F "," '{print NF}' )
 
- if (("${nbr}" <= '3' )); then
+ if (( "${nbr}" <= 3 )); then
    echo -n -e "\e[33m${grpRestricted}\e[0m \e[32mOk\e[0m ("
    echo "${nbr})"
    pass=$((pass+1))
@@ -77,13 +77,10 @@ function sudoCheck() {
 
  sudoers=$(</etc/sudoers grep -v "^#" | grep -v "^Defaults" | sed '/^\s*$/d' | grep "%" | awk -F " " '{print $1}' | sed 's/%//g' | tr '\n' ' ' | sed 's/ /,/g')
  sudoers+=$(cat /etc/sudoers.d/* | grep -v "^#" | grep -v "^Defaults" | sed '/^\s*$/d' | awk -F " " '{print $1}' | sed 's/%//g' | sort | uniq | tr '\n' ' ' | sed 's/ /,/g')
-# sudoers+=$(cat /etc/sudoers.d/* | grep -v "^#" | grep -v "^Defaults" | sed '/^\s*$/d' | awk -F " " '{print $1}' | sed 's/%//g' | tr '\n' ' ' | sed 's/ *$//' | sed 's/ /,/g')
- #sudoersCount=$(echo "${sudoers}" | awk -F',' '{print NF}')
  sudoersMember=$(echo -n "${sudoers}" | sort | uniq)
- echo "${sudoersMember}"
  sudoersCount=$(echo "${sudoersMember}" | awk -F',' '{print NF}')
 
- if (("${sudoersCount}" <= '5' )); then
+ if (( "${sudoersCount}" <= 5 )); then
    echo -e "\tSudoers: \e[33m${sudoersMember}\e[0m (${sudoersCount})"
    pass=$((pass+1))
  else

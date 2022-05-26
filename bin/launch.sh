@@ -10,7 +10,7 @@
 # * Description:        Script to check compliance of Ubuntu system.
 # *
 # * Creation: April 09, 2021
-# * Change:   April 06, 2022
+# * Change:   May 25, 2022
 # *
 # * **************************************************************************
 
@@ -36,13 +36,16 @@ declare -ir USERS=1
 # ## Application informations.
 appYear="$(date +%Y)"
 appHeader="(c) 2004-${appYear}  Cybionet - Ugly Codes Division"
-#appVersion='0.1.0'
+#appVersion='0.1.2'
 
 # ## Declare initial status.
 declare -i critical=0
 declare -i warning=0
 declare -i information=0
 declare -i pass=0
+
+# ## Location of this script.
+location=$(dirname "${0}")
 
 
 #############################################################################################
@@ -62,58 +65,67 @@ else
 fi
 
 
-
 #############################################################################################
 # ## EXECUTION
 
 # ## System check rules.
 if [ "${SYSTEM}" -eq 1 ]; then
-  source ./modules/system.sh
+  # shellcheck source=./modules/system.sh
+  source "${location}/modules/system.sh"
 fi
 
 # ## Groups check rules.
 if [ "${GROUPSS}" -eq 1 ]; then
-  source ./modules/groups.sh
+  # shellcheck source=./modules/groups.sh
+  source "${location}/modules/groups.sh"
 fi
 
 # ## Users check rules.
 if [ "${USERS}" -eq 1 ]; then
-  source ./modules/users.sh
+  # shellcheck source=./modules/users.sh
+  source "${location}/modules/users.sh"
 fi
 
 # ## Firewall check rules.
 if [ "${FIREWALL}" -eq 1 ]; then
-  source ./modules/iptables.sh
+  # shellcheck source=./modules/iptables.sh
+  source "${location}/modules/iptables.sh"
 fi
 
 # ## Security check rules.
 if [ "${SECURITY}" -eq 1 ]; then
-  source ./modules/security.sh
+  # shellcheck source=./modules/security.sh
+  source "${location}/modules/security.sh"
 fi
 
 # ## SSH check rules.
 if [ "${SSH}" -eq 1 ]; then
-  source ./modules/ssh.sh
+  # shellcheck source=./modules/ssh.sh
+  source "${location}/modules/ssh.sh"
 fi
 
 # ## Audit check rules.
 if [ "${AUDIT}" -eq 1 ]; then
-  source ./modules/audit.sh
+  # shellcheck source=./modules/audit.sh
+  source "${location}/modules/audit.sh"
 fi
 
 # ## Packages check rules.
 if [ "${PACKAGES}" -eq 1 ]; then
-  source ./modules/packages.sh
+  # shellcheck source=./modules/packages.sh
+  source "${location}/modules/packages.sh"
 fi
 
 # ## Apache2 check rules.
 if [ "${APACHE2}" -eq 1 ]; then
-  source ./modules/apache2.sh
+  # shellcheck source=./modules/apache2.sh
+  source "${location}/modules/apache2.sh"
 fi
 
 # ## Compliance check rules.
 if [ "${COMPLIANCE}" -eq 1 ]; then
-  source ./modules/compliance.sh
+  # shellcheck source=./modules/compliance.sh
+  source "${location}/modules/compliance.sh"
 fi
 
 
@@ -152,9 +164,9 @@ fi
    fi
 
    if [ "${information}" -eq 0 ]; then
-     echo -e "\tInformation: \t\e[30m${information}\e[0m"
+     echo -e "\tInformation: \t\e[34m${information}\e[0m"
    else
-     echo -e "\tInformation: \t\e[30m${information}\e[0m"
+     echo -e "\tInformation: \t\e[34m${information}\e[0m"
    fi
    
    echo -e -n "\n"

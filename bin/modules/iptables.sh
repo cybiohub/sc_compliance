@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.5 - May 24, 2022
+# ## v1.5 - May 25, 2022
 
 
 # ############################################################################################
@@ -211,7 +211,14 @@ function pkgFail2ban() {
    echo -e "\t\t[\e[31mPlease consider to install ${APPDEP}.\e[0m]"
    critical=$((critical+1))
  else
-   f2bFilters
+   f2bRunning=$(pgrep -c fail2ban)
+
+   if [ "${f2bRunning}" -eq 0 ]; then
+     echo -e "\t${APPDEP}: \e[31mCritical\e[0m"
+     echo -e "\t\t[\e[31m${APPDEP^} is not running.\e[0m]"
+   else
+     f2bFilters
+   fi
  fi
 }
 

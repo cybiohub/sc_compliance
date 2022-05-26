@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.4 - May 24, 2022
+# ## v1.4 - May 25, 2022
 
 
 # ############################################################################################
@@ -11,7 +11,7 @@
 function sshdConfPerm() {
  sshdPerm="$(ls -lah /etc/ssh/sshd_config | grep "\-rw-------" | wc -l)"
 
- if (("${sshdPerm}" == '1' )); then
+ if [ "${sshdPerm}" -eq 1 ]; then
    echo -e "\tPermission on sshd_config: \e[32mOk\e[0m (600)"
    pass=$((pass+1))
  else
@@ -24,7 +24,7 @@ function sshdConfPerm() {
 function sshdMacs() {
  hmacs="$(sshd -T | grep -i mac | grep -ic "hmac-md5\|hmac-md5-96")"
 
- if (("${hmacs}" <= '1' )); then
+ if [ "${hmacs}" -le 1 ]; then
    echo -e "\n\tApproved MAC algorithms: \e[32mOk\e[0m"
    pass=$((pass+1))
  else
@@ -39,11 +39,11 @@ function sshdBanner() {
  echo -n -e "\n\tBanner: "
 
  if [ -z "${sshdBanner}" ]; then
-   echo -e "\e[30mInformation\e[0m \n\t\t\t[\e[33mPlease consider adding \"Banner\" to SSH.\e[0m]"
+   echo -e "\e[34mInformation\e[0m \n\t\t\t[\e[33mPlease consider adding \"Banner\" to SSH.\e[0m]"
    information=$((information+1))
  else
    if [ "${sshdBanner}" == 'none' ]; then
-     echo -e "\e[30mInformation\e[0m \n\t\t\t[\e[33mPlease consider adding \"Banner\" to SSH.\e[0m]"
+     echo -e "\e[34mInformation\e[0m \n\t\t\t[\e[33mPlease consider adding \"Banner\" to SSH.\e[0m]"
      information=$((information+1))
    else
      echo -e "\e[32mOk\e[0m (${sshdBanner})"
@@ -72,11 +72,11 @@ function sshdAccessLimited() {
 function sshdPowerShell() {
  hmacsPS=$(sshd -T | grep -i mac | grep -ic "hmac-sha2-513")
 
- if (("${hmacsPS}" >= '1' )); then
-   echo -e "\tSupport MAC algorithms for PowerShell: \e[30mOk\e[0m (hmac-sha2-512)"
+ if [ "${hmacsPS}" -gt 1 ]; then
+   echo -e "\tSupport MAC algorithms for PowerShell: \e[34mOk\e[0m (hmac-sha2-512)"
    information=$((information+1))
  else
-   echo -e "\tSupport MAC algorithms for PowerShell: \e[30mNo\e[0m (hmac-sha2-512)"
+   echo -e "\tSupport MAC algorithms for PowerShell: \e[34mNo\e[0m (hmac-sha2-512)"
    information=$((information+1))
  fi
 }
@@ -96,12 +96,12 @@ function sshdSshAudit() {
 
  # ## Check if ssh-audit package is installed.
  # ## Result: 0=Installed, 1=Missing
- if [ "${dependency}" = '1' ]; then
+ if [ "${dependency}" == 1 ]; then
    echo -e "\n\t[\e[33;1;208mPlease consider to install ssh-audit.\e[0m]"
    warning=$((warning+1))
  else
    echo -e "\n\tssh-audit: \e[32mInstalled\e[0m"
-   echo -e "\t\t[\e[33;1;208mRun \"ssh-audit -p${port} ${listen}\", and make correction in sshd_config if needed.\e[0m]"
+   echo -e "\t\t[\e[33mRun \"ssh-audit -p${port} ${listen}\", and make correction in sshd_config if needed.\e[0m]"
    pass=$((pass+1))
  fi
 }
@@ -134,7 +134,7 @@ function sshdParam() {
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"Port\" parameter.\e[0m]"
    critical=$((critical+1))
  else
-   if [ "${sshdPort}" != '22' ]; then
+   if [ "${sshdPort}" -ne 22 ]; then
         echo -e "\e[32mOk\e[0m (${sshdPort})"
         pass=$((pass+1))
    else
@@ -151,7 +151,7 @@ function sshdParam() {
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"Protocol\" parameter.\e[0m]"
    critical=$((critical+1))
  else
-   if [ "${sshdProtocol}" == '2' ]; then
+   if [ "${sshdProtocol}" -eq 2 ]; then
      echo -e "\e[32mOk\e[0m (${sshdProtocol})"
      pass=$((pass+1))
    else
@@ -204,7 +204,7 @@ function sshdParam() {
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"LoginGraceTime\" parameter to 60 seconds (1 minute).\e[0m]"
    critical=$((critical+1))
  else
-   if [[ "${sshdLoginGrace}" == '60'|| "${sshdLoginGrace}" == "1m" ]]; then
+   if [[ "${sshdLoginGrace}" == '60'  ||  "${sshdLoginGrace}" == '1m' ]]; then
      echo -e "\e[32mOk\e[0m (${sshdLoginGrace})"
      pass=$((pass+1))
    else
@@ -241,7 +241,7 @@ function sshdParam() {
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"ClientAliveCountMax\" parameter to \"0\".\e[0m]"
    critical=$((critical+1))
  else
-   if [ "${sshdCltAlive}" == '0' ]; then
+   if [ "${sshdCltAlive}" -eq 0 ]; then
      echo -e "\e[32mOk\e[0m (${sshdCltAlive})"
      pass=$((pass+1))
    else
@@ -293,12 +293,17 @@ function sshdParam() {
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mEnsure SSH \"ClientAliveInterval\" parameter is set to \"0\".\e[0m]"
    critical=$((critical+1))
  else
-   if [[ "${sshdClientAliveInterval}" == 0 ]]; then
+   if [ "${sshdClientAliveInterval}" -eq 0 ]; then
      echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval})"
      pass=$((pass+1))
    else
-     echo -e "\e[31mCritical\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[31mSetting the \"ClientAliveInterval\" parameter to \"0\". While the recommended setting is 300 seconds (5 minutes).\e[0m]"
-     critical=$((critical+1))
+     if [[ "${sshdClientAliveInterval}" -le 300 && "${sshdClientAliveInterval}" -gt 0 ]]; then
+       echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[33mSetting the \"ClientAliveInterval\" parameter to \"0\". While the recommended setting is 300 seconds (5 minutes).\e[0m]"
+       pass=$((pass+1))
+     else
+       echo -e "\e[31mCritical\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[31mSetting the \"ClientAliveInterval\" parameter to \"0\". While the recommended setting is 300 seconds (5 minutes).\e[0m]"
+       critical=$((critical+1))
+     fi
    fi
  fi
 
@@ -394,7 +399,7 @@ function sshdParam() {
 }
 
 function sshd2fa(){
- sshMfa=$(</etc/pam.d/sshd grep 'pam_google_authenticator.so' | grep -c -v '#')
+ sshdMfa=$(</etc/pam.d/sshd grep 'pam_google_authenticator.so' | grep -c -v '#')
  echo -n -e "\n\tGoogle Authenticator: "
 
  if [[ "${sshdMfa}" -eq 0 ]]; then
