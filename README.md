@@ -11,8 +11,8 @@ Here are some major points that this script will evaluate.
 - Groups
 - Iptables
 - Packages
-- Ssh
-- Ssystem
+- Sshd
+- System
 - Users
 
 ---
