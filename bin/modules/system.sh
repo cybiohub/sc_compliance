@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.6 - May 24, 2022
+# ## v1.7 - July 27, 2022
 
 
 # ############################################################################################
@@ -79,20 +79,24 @@ function sourcesRepo() {
  fi
 
  # ## Check files in sourced.list.d.
- for file in /etc/apt/sources.list.d/*
- do
-   mySource="${file}"
-   sourceDStatus=$(grep -v "${osVersion}" "${file}" | grep -v "^#" | sed '/^\s*$/d' | wc -l)
-   sourceFile=$( echo "${mySource}" | awk -F "/" '{print $5}')
+ sourceFiles=$(ind /etc/apt/sources.list.d/ -maxdepth 1 -type f | wc -l)
 
-   if [ "${sourceDStatus}" -ne 0 ]; then
-     echo -e "\t\tSource \"${sourceFile}\": \e[31mCritical\e[0m"
-     critical=$((critical+1))
-   else
-     echo -e "\t\tSource \"${sourceFile}\": \e[32mOk\e[0m"
-     pass=$((pass+1))
-   fi
- done
+ if [ "${sourceFiles}" -gt 0 ]; then
+   for file in /etc/apt/sources.list.d/*
+   do
+       mySource="${file}"
+       sourceDStatus=$(grep -v "${osVersion}" "${file}" | grep -v "^#" | sed '/^\s*$/d' | wc -l)
+       sourceFile=$( echo "${mySource}" | awk -F "/" '{print $5}')
+
+     if [ "${sourceDStatus}" -ne 0 ]; then
+       echo -e "\t\tSource \"${sourceFile}\": \e[31mCritical\e[0m"
+       critical=$((critical+1))
+     else
+       echo -e "\t\tSource \"${sourceFile}\": \e[32mOk\e[0m"
+       pass=$((pass+1))
+     fi
+   done
+ fi
 }
 
 

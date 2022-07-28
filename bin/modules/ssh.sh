@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.4 - May 25, 2022
+# ## v1.5 - July 27, 2022
 
 
 # ############################################################################################
@@ -9,7 +9,7 @@
 
 # ## Ensure permissions on /etc/ssh/sshd_config are configured.
 function sshdConfPerm() {
- sshdPerm="$(ls -lah /etc/ssh/sshd_config | grep "\-rw-------" | wc -l)"
+ sshdPerm="$(ls -lah /etc/ssh/sshd_config | grep -c "\-rw-------")"
 
  if [ "${sshdPerm}" -eq 1 ]; then
    echo -e "\tPermission on sshd_config: \e[32mOk\e[0m (600)"
@@ -91,18 +91,30 @@ function sshdSshAudit() {
    listen='127.0.0.1'
  fi
 
- dpkg-query -l "${APPDEP}" > /dev/null 2>&1
- dependency=$(echo ${?})
 
  # ## Check if ssh-audit package is installed.
  # ## Result: 0=Installed, 1=Missing
- if [ "${dependency}" == 1 ]; then
+ if ! dpkg-query -s "${APPDEP}" > /dev/null 2>&1; then
+   echo -e "\e[34;1;208mINFORMATION:\e[0m Installing the required dependencies (${APPDEP})."
    echo -e "\n\t[\e[33;1;208mPlease consider to install ssh-audit.\e[0m]"
    warning=$((warning+1))
  else
+   sshAuditFail=$(ssh-audit -lfail -p"${port}" "${listen}" | wc -l)
+   sshAuditWarn=$(ssh-audit -lwarn -p"${port}" "${listen}" | wc -l)
+
    echo -e "\n\tssh-audit: \e[32mInstalled\e[0m"
-   echo -e "\t\t[\e[33mRun \"ssh-audit -p${port} ${listen}\", and make correction in sshd_config if needed.\e[0m]"
-   pass=$((pass+1))
+
+   if [ "${sshAuditFail}" -gt 0 ]; then
+     echo -e "\t\t[\e[31mRun \"ssh-audit -p${port} ${listen}\", and make correction in sshd_config.\e[0m]"
+     critical=$((critical+1))
+   else
+     if [ "${sshAuditWarn}" -gt 0 ]; then
+       echo -e "\t\t[\e[33mRun \"ssh-audit -p${port} ${listen}\", and make correction in sshd_config if needed.\e[0m]"
+       warning=$((warning+1))
+     else
+       pass=$((pass+1))
+     fi
+   fi
  fi
 }
 
@@ -416,15 +428,15 @@ function sshd2fa(){
  fi
 }
 
-function checkPackage() {
- REQUIRED_PKG="${1}"
-
- if ! dpkg-query -s "${REQUIRED_PKG}" > /dev/null 2>&1; then
-   dependency='0'
- else
-   dependency='1'
- fi
-}
+#function checkPackage() {
+# REQUIRED_PKG="${1}"
+#
+# if ! dpkg-query -s "${REQUIRED_PKG}" > /dev/null 2>&1; then
+#   dependency='0'
+# else
+#   dependency='1'
+# fi
+#}
 
 
 # ############################################################################################
