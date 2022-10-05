@@ -1,0 +1,17 @@
+V0.1.4 - 2022-09-18
+
+## Added
+ - Install dependancy if missing (bc).
+
+## Fixed
+ - Add detection of OS distribution for the do-release-upgrade verification.
+ - Fix the verification if fail2ban is running
+
+V0.1.5 - 2022-10-04
+
+## Added
+ - Add networking modules.
+ - Add Cron security check.
+
+## Fixed
+ - Fix some wrong display in ssh module.

@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.5 - July 27, 2022
+# ## v1.7 - October 04, 2022
 
 
 # ############################################################################################
@@ -22,7 +22,7 @@ function sshdConfPerm() {
 
 # ## MD5 and 96-bit MAC algorithms are considered weak and have been shown to increase exploitability in SSH downgrade attacks.
 function sshdMacs() {
- hmacs="$(sshd -T | grep -i mac | grep -ic "hmac-md5\|hmac-md5-96")"
+ hmacs="$(sshd -T | grep -i 'mac' | grep -ic "hmac-md5\|hmac-md5-96")"
 
  if [ "${hmacs}" -le 1 ]; then
    echo -e "\n\tApproved MAC algorithms: \e[32mOk\e[0m"
@@ -42,7 +42,7 @@ function sshdBanner() {
    echo -e "\e[34mInformation\e[0m \n\t\t\t[\e[33mPlease consider adding \"Banner\" to SSH.\e[0m]"
    information=$((information+1))
  else
-   if [ "${sshdBanner}" == 'none' ]; then
+   if [ "${sshdBanner,,}" == 'none' ]; then
      echo -e "\e[34mInformation\e[0m \n\t\t\t[\e[33mPlease consider adding \"Banner\" to SSH.\e[0m]"
      information=$((information+1))
    else
@@ -70,10 +70,10 @@ function sshdAccessLimited() {
 
 # ## Check if the hmac-sha2-512 algorithm is suported for PowerShell script (Informal only).
 function sshdPowerShell() {
- hmacsPS=$(sshd -T | grep -i mac | grep -ic "hmac-sha2-513")
+ hmacsPS=$(sshd -T | grep -i 'mac' | grep -ic "hmac-sha2-512")
 
- if [ "${hmacsPS}" -gt 1 ]; then
-   echo -e "\tSupport MAC algorithms for PowerShell: \e[34mOk\e[0m (hmac-sha2-512)"
+ if [ "${hmacsPS}" -ge 1 ]; then
+   echo -e "\tSupport MAC algorithms for PowerShell: \e[32mOk\e[0m (hmac-sha2-512)"
    information=$((information+1))
  else
    echo -e "\tSupport MAC algorithms for PowerShell: \e[34mNo\e[0m (hmac-sha2-512)"
@@ -91,12 +91,11 @@ function sshdSshAudit() {
    listen='127.0.0.1'
  fi
 
-
  # ## Check if ssh-audit package is installed.
  # ## Result: 0=Installed, 1=Missing
  if ! dpkg-query -s "${APPDEP}" > /dev/null 2>&1; then
-   echo -e "\e[34;1;208mINFORMATION:\e[0m Installing the required dependencies (${APPDEP})."
-   echo -e "\n\t[\e[33;1;208mPlease consider to install ssh-audit.\e[0m]"
+   echo -e "\n\t${APPDEP}: \e[33mWarning\e[0m"
+   echo -e "\t\t[\e[33mPlease consider to install ssh-audit.\e[0m]"
    warning=$((warning+1))
  else
    sshAuditFail=$(ssh-audit -lfail -p"${port}" "${listen}" | wc -l)
@@ -112,25 +111,28 @@ function sshdSshAudit() {
        echo -e "\t\t[\e[33mRun \"ssh-audit -p${port} ${listen}\", and make correction in sshd_config if needed.\e[0m]"
        warning=$((warning+1))
      else
+       echo -e "\t\t[\e[33;1;208mRun ssh-audit -p${port} ${listen}, and make correction required in sshd_config.\e[0m]"
        pass=$((pass+1))
      fi
    fi
  fi
 }
 
+# ## UNUSED
 function sshdAuditWarn() {
  echo -e "\tPermission on sshd_config: \e[32mOk\e[0m (444)"
  ssh-audit --level=warn -p22 192.168.0.47
  #ssh-audit --level=warn -p2222 127.0.0.1
 }
 
+# ## UNUSED
 function sshdAuditFail() {
  echo -e "\tPermission on sshd_config: \e[32mOk\e[0m (444)"
  ssh-audit --level=fail -p22 192.168.0.47
  #ssh-audit --level=fail -p2222 127.0.0.1
 }
 
-# BUG !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# ## UNUSED
 function sshdT() {
 sshd -t
 }
@@ -180,11 +182,11 @@ function sshdParam() {
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"PermitRootLogin\" parameter.\e[0m]"
    critical=$((critical+1))
  else
-   if [ "${sshdPermRoot}" == 'no' ]; then
+   if [ "${sshdPermRoot,,}" == 'no' ]; then
      echo -e "\e[32mOk\e[0m (${sshdPermRoot})"
      pass=$((pass+1))
    else
-     echo -e "\e[31mCritical\e[0m (${sshdPermRoot})  \n\t\t\t[\e[31mMake sure to assign the value \"no\" to the \"PermitRootLogin\" parameter.\e[0m]"
+     echo -e "\e[31mCritical\e[0m (${sshdPermRoot})  \n\t\t\t[\e[31mMake sure to assign the value \"No\" to the \"PermitRootLogin\" parameter.\e[0m]"
      critical=$((critical+1))
    fi
  fi
@@ -198,11 +200,11 @@ function sshdParam() {
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"X11Forwarding\" parameter.\e[0m]"
    critical=$((critical+1))
  else
-   if [[ "${sshX11Forw}" =~ (no|No|NO) ]]; then
+   if [ "${sshX11Forw,,}" == 'no' ]; then
      echo -e "\e[32mOk\e[0m (${sshX11Forw})"
      pass=$((pass+1))
    else
-     echo -e "\e[31mCritical\e[0m (${sshX11Forw}) \n\t\t\t[\e[31mMake sure to assign the value \"no\" to the \"X11Forwarding\" parameter.\e[0m]"
+     echo -e "\e[31mCritical\e[0m (${sshX11Forw}) \n\t\t\t[\e[31mMake sure to assign the value \"No\" to the \"X11Forwarding\" parameter.\e[0m]"
      critical=$((critical+1))
    fi
  fi
@@ -231,14 +233,14 @@ function sshdParam() {
  echo -n -e "\t\tIgnoreRhosts: "
 
  if [ -z "${sshdIgnoreRhosts}" ]; then
-   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"IgnoreRhosts\" parameter to \"yes\".\e[0m]"
+   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"IgnoreRhosts\" parameter to \"Yes\".\e[0m]"
    critical=$((critical+1))
  else
-   if [[ "${sshdIgnoreRhosts}" =~ (yes|Yes|YES) ]]; then
+   if [ "${sshdIgnoreRhosts,,}" == 'yes' ]; then
      echo -e "\e[32mOk\e[0m (${sshdIgnoreRhosts})"
      pass=$((pass+1))
    else
-     echo -e "\e[31mCritical\e[0m (${sshdIgnoreRhosts}) \n\t\t\t[\e[31mMake sure to assign the value \"yes\" to the \"IgnoreRhosts\" parameter.\e[0m]"
+     echo -e "\e[31mCritical\e[0m (${sshdIgnoreRhosts}) \n\t\t\t[\e[31mMake sure to assign the value \"Yes\" to the \"IgnoreRhosts\" parameter.\e[0m]"
      critical=$((critical+1))
    fi
  fi
@@ -271,7 +273,7 @@ function sshdParam() {
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"PermitEmptyPasswords\" parameter.\e[0m]"
    critical=$((critical+1))
  else
-   if [[ "${sshdPermPass}" =~ (no|No|NO) ]]; then
+   if [ "${sshdPermPass,,}" == 'no' ]; then
      echo -e "\e[32mOk\e[0m (${sshdPermPass})"
      pass=$((pass+1))
    else
@@ -319,39 +321,38 @@ function sshdParam() {
    fi
  fi
 
-#ROBERT
 # ## Users are not allowed to set environment options for SSH. An attacker may be able to bypass some access restrictions over SSH.
-# ## CCE-14716-5
+# ## [Microsoft CCE-14716-5]
  sshdPermitUserEnvironment="$(grep -i 'PermitUserEnvironment' /etc/ssh/sshd_config | grep -v '^#' | awk -F " " '{print $2}')"
  echo -n -e "\t\tPermitUserEnvironment: "
 
  if [ -z "${sshdPermitUserEnvironment}" ]; then
-   echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider to set SSH \"PermitUserEnvironment\" parameter to \"no\".\e[0m]"
+   echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider to set SSH \"PermitUserEnvironment\" parameter to \"No\".\e[0m]"
    warning=$((warning+1))
  else
-   if [[ "${sshdPermitUserEnvironment}" =~ (no|No|NO) ]]; then
+   if [ "${sshdPermitUserEnvironment,,}" == 'no' ]; then
      echo -e "\e[32mOk\e[0m (${sshdPermitUserEnvironment})"
      pass=$((pass+1))
    else
-     echo -e "\e[33mWarning\e[0m (${sshdPermitUserEnvironment}) \n\t\t\t[\e[33mSetting the \"PermitUserEnvironment\" parameter to \"no\".\e[0m]"
+     echo -e "\e[33mWarning\e[0m (${sshdPermitUserEnvironment}) \n\t\t\t[\e[33mSetting the \"PermitUserEnvironment\" parameter to \"No\".\e[0m]"
      warning=$((warning+1))
    fi
  fi
 
 # ## SSH host-based authentication should be disabled.
-# ## CCE-4370-3
+# ## [Microsoft CCE-4370-3]
  sshdHostbasedAuthentication="$(grep -i 'HostbasedAuthentication' /etc/ssh/sshd_config | grep -v '^#' | awk -F " " '{print $2}')"
  echo -n -e "\t\tHostbasedAuthentication: "
 
  if [ -z "${sshdHostbasedAuthentication}" ]; then
-   echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider to set SSH \"HostbasedAuthentication\" parameter to \"no\".\e[0m]"
+   echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider to set SSH \"HostbasedAuthentication\" parameter to \"No\".\e[0m]"
    warning=$((warning+1))
  else
-   if [[ "${sshdHostbasedAuthentication}" =~ (no|No|NO) ]]; then
+   if [ "${sshdHostbasedAuthentication,,}" == 'no' ]; then
      echo -e "\e[32mOk\e[0m (${sshdHostbasedAuthentication})"
      pass=$((pass+1))
    else
-     echo -e "\e[33mWarning\e[0m (${sshdHostbasedAuthentication}) \n\t\t\t[\e[33mSetting the \"HostbasedAuthentication\" parameter to \"no\".\e[0m]"
+     echo -e "\e[33mWarning\e[0m (${sshdHostbasedAuthentication}) \n\t\t\t[\e[33mSetting the \"HostbasedAuthentication\" parameter to \"No\".\e[0m]"
      warning=$((warning+1))
    fi
  fi
@@ -363,48 +364,48 @@ function sshdParam() {
 # echo -n -e "\t\tRhostsRSAAuthentication: "
 #
 # if [ -z "${sshdRhostsRSAAuthentication}" ]; then
-#   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mPlease consider to set SSH \"RhostsRSAAuthentication\" parameter to \"no\".\e[0m]"
+#   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mPlease consider to set SSH \"RhostsRSAAuthentication\" parameter to \"No\".\e[0m]"
 #   critical=$((critical+1))
 # else
-#   if [[ "${sshdRhostsRSAAuthentication}" =~ (no|No|NO) ]]; then
+#   if [ "${sshdRhostsRSAAuthentication,,}" == 'no' ]; then
 #     echo -e "\e[32mOk\e[0m (${sshdRhostsRSAAuthentication})"
 #     pass=$((pass+1))
 #   else
-#     echo -e "\e[31mCritical\e[0m (${sshdRhostsRSAAuthentication}) \n\t\t\t[\e[31mCritical the \"RhostsRSAAuthentication\" parameter to \"no\".\e[0m]"
+#     echo -e "\e[31mCritical\e[0m (${sshdRhostsRSAAuthentication}) \n\t\t\t[\e[31mCritical the \"RhostsRSAAuthentication\" parameter to \"No\".\e[0m]"
 #     critical=$((critical+1))
 #   fi
 # fi
 
- # ## Compression (V-)
+ # ## Compression [Cisofy SSH-7408]
  sshdCompression=$(grep -i 'Compression' /etc/ssh/sshd_config | grep -v '^#' | awk -F " " '{print $2}')
  echo -n -e "\t\tCompression: "
 
  if [ -z "${sshdCompression}" ]; then
-   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"Compression\" parameter.\e[0m]"
+   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"Compression\" parameter to \"No\".\e[0m]"
    critical=$((critical+1))
  else
-   if [ "${sshdCompression}" == 'no' ]; then
+   if [ "${sshdCompression,,}" == 'no' ]; then
      echo -e "\e[32mOk\e[0m (${sshdCompression})"
      pass=$((pass+1))
    else
-     echo -e "\e[31mCritical\e[0m (${sshdCompression}) \n\t\t\t[\e[31mMake sure to assign the value \"no\" to the \"Compression\" parameter.\e[0m]"
+     echo -e "\e[31mCritical\e[0m (${sshdCompression}) \n\t\t\t[\e[31mMake sure to assign the value \"No\" to the \"Compression\" parameter.\e[0m]"
      critical=$((critical+1))
    fi
  fi
 
- # ## GatewayPorts (V-)
+ # ## GatewayPorts [Stig V-63213]
  sshdGwPorts=$(grep -i 'GatewayPorts' /etc/ssh/sshd_config | grep -v '^#' | awk -F " " '{print $2}')
  echo -n -e "\t\tGatewayPorts: "
 
  if [ -z "${sshdGwPorts}" ]; then
-   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"no\" parameter.\e[0m]"
+   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"No\" parameter.\e[0m]"
    critical=$((critical+1))
  else
-   if [[ "${sshdGwPorts}" =~ (no|No|NO) ]]; then
+   if [ "${sshdGwPorts,,}" == 'no' ]; then
      echo -e "\e[32mOk\e[0m (${sshdGwPorts})"
      pass=$((pass+1))
    else
-     echo -e "\e[31mCritical\e[0m (${sshdGwPorts}) \n\t\t\t[\e[31mMake sure to assign the value \"no\" to the \"GatewayPorts\" parameter.\e[0m]"
+     echo -e "\e[31mCritical\e[0m (${sshdGwPorts}) \n\t\t\t[\e[31mMake sure to assign the value \"No\" to the \"GatewayPorts\" parameter.\e[0m]"
      critical=$((critical+1))
    fi
  fi
@@ -415,6 +416,7 @@ function sshd2fa(){
  echo -n -e "\n\tGoogle Authenticator: "
 
  if [[ "${sshdMfa}" -eq 0 ]]; then
+   # ## apt-get install libpam-google-authenticator
    echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider using MFA on the SSHD service.\e[0m]"
    warning=$((warning+1))
  else
@@ -422,6 +424,7 @@ function sshd2fa(){
      echo -e "\e[32mOk\e[0m"
      pass=$((pass+1))
    else
+     # ## apt-get install libpam-google-authenticator
      echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider using MFA on the SSHD service.\e[0m]"
      warning=$((warning+1))
    fi

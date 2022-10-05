@@ -42,17 +42,17 @@ function loginDefs() {
 
 # ##
 function passMin() {
- passDayMin=$(</etc/login.defs grep "^PASS_MIN_DAYS" | awk -F " " '{print $2}')
+ passMinDays=$(</etc/login.defs grep "^PASS_MIN_DAYS" | awk -F " " '{print $2}')
 
- if [ -z "${passDayMin}" ]; then
+ if [ -z "${passMinDays}" ]; then
    echo -e "\tEnsure minimum days between password changes is 7 or more in /etc/login.defs"
    critical=$((critical+1))
  else
-   if [ "${passDayMin}" -le 7 ]; then
-     echo -e "\tMinimum days between password changes: \e[32mOk\e[0m (${passDayMin})"
+   if [ "${passMinDays}" -le 7 ]; then
+     echo -e "\tMinimum days between password changes: \e[32mOk\e[0m (${passMinDays})"
      pass=$((pass+1))
    else
-     echo -e "\tMinimum days between password changes: \e[31mCritical\e[0m (${passDayMin})\n\t\t[\e[31mEnsure minimum days between password changes is 7 or more\e[0m]"
+     echo -e '\tMinimum days between password changes: \e[31mCritical\e[0m (${passMinDays})\n\t\t[\e[31mPlease set the "PASS_MIN_DAYS" parameter to "7" or more\e[0m]'
      critical=$((critical+1))
    fi
  fi

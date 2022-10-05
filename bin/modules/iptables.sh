@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.5 - May 25, 2022
+# ## v1.7 - September 18, 2022
 
 
 # ############################################################################################
@@ -72,6 +72,9 @@ function inputRulesNotUsed() {
    pass=$((pass+1))
  else
    echo -e "\n\tSome ACCEPT rules in the INPUT chain are not used: \e[33mWarning\e[0m (${acceptInputRNU}) \n\t\t[\e[33mPlease consider to removing these.\e[0m]"
+   badInRules=$(iptables -nvL INPUT | grep "0     0" | grep -v 'state' | grep 'ACCEPT')
+   echo -e "${badInRules}"
+
    warning=$((warning+1))
  fi
 }
@@ -80,10 +83,13 @@ function outputRulesNotUsed() {
  acceptOutputRNU="$(iptables -nvL OUTPUT | grep "0     0" | grep -v 'state' | grep -c 'ACCEPT')"
 
  if [ "${acceptOutputRNU}" -eq 0 ]; then
-   echo -e "\tACCEPT rules not used in the OUTPUT chain: \e[32mOk\e[0m"
+   echo -e "\n\tACCEPT rules not used in the OUTPUT chain: \e[32mOk\e[0m"
    pass=$((pass+1))
  else
-   echo -e "\tSome ACCEPT rules in the OUTPUT chain are not used: \e[33mWarning\e[0m (${acceptOutputRNU}) \n\t\t[\e[33mPlease consider to removing these.\e[0m]"
+   echo -e "\n\tSome ACCEPT rules in the OUTPUT chain are not used: \e[33mWarning\e[0m (${acceptOutputRNU}) \n\t\t[\e[33mPlease consider to removing these.\e[0m]"
+   badOutRules=$(iptables -nvL OUTPUT | grep "0     0" | grep -v 'state' | grep 'ACCEPT')
+   echo -e "\t\t[${badOutRules}]"
+   
    warning=$((warning+1))
  fi
 }
@@ -98,7 +104,8 @@ function ipv6Enable() {
 
  # Valeur possible pour disable_ipv6 : 0=actif, 1=désactivé.
  if [ "${ipv6_disabled}" -eq 1 ]; then
-   echo -e "\tIPv6 Protocol: \e[33mDisabled\e[0m"
+   echo -e "\tIPv6 Protocol: \e[34mDisabled\e[0m"
+   information=$((information+1))
    # The IPv6 protocol is not enabled on this server.
  else
    ip6tablesCheck
@@ -198,29 +205,58 @@ function outputRulesNotUsed6() {
 
 
 # ############################################################################################
+# ## CROWDSEC
+
+function pkgCrowdsec() {
+
+ APPDEP2='crowdsec'
+ checkPackage "${APPDEP2}"
+ crowdsecExist="${dependency}"
+
+ if [ "${crowdsecExist}" -eq 1 ]; then
+   # ## Header.
+   echo -e "\n\e[34m[CROWDSEC]\e[0m"
+
+   echo -e "\t${APPDEP2^}: \e[32mOk\e[0m"
+   pass=$((pass+1))
+
+   pkgFail2ban
+ else
+   pkgFail2ban
+ fi
+}
+
+
+# ############################################################################################
 # ## FAIL2BAN
 
 function pkgFail2ban() {
+ echo -e "\n\e[34m[FAIL2BAN]\e[0m"
+
  APPDEP='fail2ban'
  checkPackage "${APPDEP}"
+   echo -e "\t${APPDEP^}: \e[32mOk\e[0m\n"
+   pass=$((pass+1))
 
  # ## Check if fail2ban package is installed.
  # ## Result: 0=Missing, 1=Installed
- if [ "${dependency}" -eq 0 ]; then
+ if [ "${dependency}" -eq 0 ] && [ "${crowdsecExist}" -eq 0 ]; then
    echo -e "\t${APPDEP}: \e[31mCritical\e[0m"
    echo -e "\t\t[\e[31mPlease consider to install ${APPDEP}.\e[0m]"
    critical=$((critical+1))
  else
-   f2bRunning=$(pgrep -c fail2ban)
 
-   if [ "${f2bRunning}" -eq 0 ]; then
+  # ## Check if fail2ban is running.
+   if [ -f /run/fail2ban/fail2ban.pid ]; then
+     f2bFilters
+   else
      echo -e "\t${APPDEP}: \e[31mCritical\e[0m"
      echo -e "\t\t[\e[31m${APPDEP^} is not running.\e[0m]"
-   else
-     f2bFilters
+     critical=$((critical+1))
    fi
  fi
 }
+
 
 function f2bFilters() {
  #declare -r wantedFilters='ssh,sshd,sshd-authfail,sshd-ddos,sshd-deny,sshd-proto'
@@ -229,6 +265,7 @@ function f2bFilters() {
  # ########################
  # ## SSH
  # ##
+
  echo -e "\tSSH: "
 
  # ## Now loop through the above array.
@@ -242,6 +279,7 @@ function f2bFilters() {
   # ########################
   # ## NAMED
   # ##
+
  echo -e "\tNAMED: "
 
  # ## Now loop through the above array.
@@ -255,6 +293,7 @@ function f2bFilters() {
  # ########################
  # ## RECIDIVE
  # ##
+
  echo -e "\tRECIDIVE: "
 
  # ## Now loop through the above array.
@@ -316,16 +355,14 @@ iptablesIpset
 echo -e "\n\e[34m[IP6TABLES]\e[0m"
 ipv6Enable
 
-# ## Header.
-echo -e "\n\e[34m[FAIL2BAN FILTERING]\e[0m"
-
-# ## Check.
-pkgFail2ban
+# ## Check Crowdsec and/or Fail2ban.
+pkgCrowdsec
 
 # ## Return status.
 return "${pass}"
 return "${warning}"
 return "${critical}"
 return "${information}"
+
 
 # ## END

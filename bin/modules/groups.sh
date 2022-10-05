@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.5 - May 25, 2022
+# ## v1.6 - September 08, 2022
 
 
 # ############################################################################################
@@ -37,7 +37,6 @@ function groupCheck() {
    critical=$((critical+1))
  fi
 
-# ROBERT
  echo -e -n "\tGroup sudo: "
 
  grpSudo=$(awk -F':' '/sudo/{print $4}' /etc/group)
@@ -70,27 +69,6 @@ function groupCheck() {
 }
 
 
-# ## ROBERT - Mettre en array
-# ## Check sudoers.
-function sudoCheck() {
- echo -e "\n\e[34m[SUDOERS]\e[0m"
-
- sudoers=$(</etc/sudoers grep -v "^#" | grep -v "^Defaults" | sed '/^\s*$/d' | grep "%" | awk -F " " '{print $1}' | sed 's/%//g' | tr '\n' ' ' | sed 's/ /,/g')
- sudoers+=$(cat /etc/sudoers.d/* | grep -v "^#" | grep -v "^Defaults" | sed '/^\s*$/d' | awk -F " " '{print $1}' | sed 's/%//g' | sort | uniq | tr '\n' ' ' | sed 's/ /,/g')
- sudoersMember=$(echo -n "${sudoers}" | sort | uniq)
- sudoersCount=$(echo "${sudoersMember}" | awk -F',' '{print NF}')
-
- if (( "${sudoersCount}" <= 5 )); then
-   echo -e "\tSudoers: \e[33m${sudoersMember}\e[0m (${sudoersCount})"
-   pass=$((pass+1))
- else
-   echo -e "\tSudoers: \e[33m${sudoersMember}\e[0m (${sudoersCount})"
-   echo -e "\t\t[\e[31mReduce the number of members in the sudoers.\e[0m]"
-   critical=$((critical+1))
- fi
-}
-
-
 # ############################################################################################
 # ## EXECUTION
 
@@ -100,7 +78,6 @@ echo -e "\n\e[34m[GROUPS]\e[0m"
 # ## Check.
 groupIntegrity
 groupCheck
-sudoCheck
 
 # ## Return status.
 return "${pass}"

@@ -29,6 +29,21 @@ function orderExecutionVul() {
 }
 
 # ##
+function isEnableHistory() {
+ isHistoryEnables="$(set -o | grep 'history' | awk -F " " '{print $2}')"
+ 
+ echo "##############################################################################3ALLO: ${isHistoryEnables}"
+
+ if [ "${isHistoryEnables}" == 'on' ]; then
+   echo -e '\tCommands History: \e[32mEnabled\e[0m'
+   pass=$((pass+1))
+ else
+   echo -e '\tCommands History: \e[31mCritical\e[0m\n\t\t[\e[31mThe commands history is disabled. Check your system and launch "set -o history".\e[0m]'
+   critical=$((critical+1))
+ fi
+}
+
+# ##
 function hideCmdHistory() {
  declare -i hiddenCmd
 # hiddenCmd="$(cat /root/.bashrc | grep ^HISTCONTROL | grep -c 'ignorespace')"
@@ -43,13 +58,14 @@ function hideCmdHistory() {
  fi
 }
 
-# ## Three Finger Salute.
+# ## Three Finger Salute (STIG V-238380)
 function threeFingerSalute() {
  if [ -e '/etc/systemd/system/ctrl-alt-del.target' ]; then
    echo -e '\tCtrl+Alt+Del Disabled: \e[32mOk\e[0m'
    pass=$((pass+1))
  else
   echo -e '\tCtrl+Alt+Del Disabled: \e[31mCritical\e[0m\n\t\t[\e[31mDisable the "Ctrl+Alt+Del on the operating system.\e[0m]'
+  echo -e [\t\t\e[31msystemctl mask ctrl-alt-del.target\e[0m]
    critical=$((critical+1))
  fi
 }
@@ -119,6 +135,7 @@ echo -e "\n\e[34m[COMPLIANCE]\e[0m"
 
 # ## Check.
 orderExecutionVul
+#isEnableHistory
 hideCmdHistory
 threeFingerSalute
 pkgZabbixAgent
