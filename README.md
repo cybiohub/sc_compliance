@@ -10,8 +10,10 @@ Here are some major points that this script will evaluate.
 - Compliance
 - Groups
 - Iptables
+- Network
 - Packages
 - Sshd
+- Sudo
 - System
 - Users
 
