@@ -5,12 +5,12 @@
 # * Author:        	(c) 2004-2022  Cybionet - Ugly Codes Division
 # *
 # * File:               launch.sh
-# * Version:            0.1.5
+# * Version:            0.1.7
 # *
 # * Description:        Script to check compliance of Ubuntu system.
 # *
 # * Creation: April 09, 2021
-# * Change:   October 04, 2022
+# * Change:   December 10, 2022
 # *
 # * **************************************************************************
 # * Requirement
@@ -45,7 +45,7 @@ declare -ir APACHE2=0
 # ## Application informations.
 appYear="$(date +%Y)"
 appHeader="(c) 2004-${appYear}  Cybionet - Ugly Codes Division"
-#appVersion='0.1.5'
+appVersion='0.1.7'
 
 # ## Declare initial status.
 declare -i critical=0
@@ -61,6 +61,13 @@ location=$(dirname "${0}")
 # ## VERIFICATION
 
 clear
+
+# ## Show the version of this app (ansible ready).
+if [ "${1}" == 'version' ] ; then
+ echo -e "${appVersion}"
+ exit 0
+fi
+
 
 # ## Check if the script are running with sudo or under root user.
 if [ "${EUID}" -ne 0 ] ; then

@@ -1,11 +1,18 @@
-V0.1.4 - 2022-09-18
-
-## Added
- - Install dependancy if missing (bc).
+V0.1.7 - 2022-12-10
 
 ## Fixed
- - Add detection of OS distribution for the do-release-upgrade verification.
- - Fix the verification if fail2ban is running
+ - Correction of cron directory module.
+ - Correction in sudo module.
+
+## Added
+ - Add Sudo logfile verification.
+
+
+V0.1.6 - 2022-11-24
+
+## Added
+ - Add version option.
+
 
 V0.1.5 - 2022-10-04
 
@@ -15,3 +22,15 @@ V0.1.5 - 2022-10-04
 
 ## Fixed
  - Fix some wrong display in ssh module.
+
+
+V0.1.4 - 2022-09-18
+
+## Added
+ - Install dependancy if missing (bc).
+
+## Fixed
+ - Add detection of OS distribution for the do-release-upgrade verification.
+ - Fix the verification if fail2ban is running
+
+

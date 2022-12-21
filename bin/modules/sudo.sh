@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.1 - October 04, 2022
+# ## v1.2 - December 20, 2022
 
 
 # ############################################################################################
@@ -79,6 +79,22 @@ function wheelGrpCheck() {
 }
 
 
+function sudoLogCheck() {
+ sudoLog="$(grep -cP '^[\s]*Defaults.*\blogfile=("(?:\\"|\\\\|[^"\\\n])*"\B|[^"](?:(?:\\,|\\"|\\ |\\\\|[^", \\\n])*)\b)\b.*$' /etc/sudoers)"
+
+ echo -e -n "\n\tSudo Logfile: "
+
+ if (( "${sudoLog}" == 1 )); then
+   echo -n -e "\e[33m${sudoLog}\e[0m \e[32mOk\e[0m ("
+   echo "${nbr})"
+   pass=$((pass+1))
+ else
+   echo -e "\e[31mCritical\e[0m"
+   echo -e "\t\t[\e[31mEnsure sudo logfile exists. Add 'Defaults logfile=/var/log/sudo.log' to the /etc/sudoers file.\e[0m]"
+   critical=$((critical+1))
+ fi
+}
+
 # ############################################################################################
 # ## EXECUTION
 
@@ -87,6 +103,7 @@ echo -e "\n\e[34m[SUDO/SUDOERS]\e[0m"
 
 sudoCheck
 sudoLog
+sudoLogCheck
 wheelGrpCheck
 
 # ## Return status.
