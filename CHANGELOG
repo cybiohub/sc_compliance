@@ -1,3 +1,14 @@
+V0.1.8 - 2023-01-11
+
+## Added
+ - Added crontab permission check.
+ - Added verification for the package autossh.
+
+## Fixed
+ - Fixed recommended value for SSH according to STIG/CIS.
+ - Text adjustment in some module.
+
+
 V0.1.7 - 2022-12-10
 
 ## Fixed

@@ -2,15 +2,15 @@
 #set -x
 # * **************************************************************************
 # *
-# * Author:        	(c) 2004-2022  Cybionet - Ugly Codes Division
+# * Author:        	(c) 2004-2023  Cybionet - Ugly Codes Division
 # *
 # * File:               launch.sh
-# * Version:            0.1.7
+# * Version:            0.1.6
 # *
 # * Description:        Script to check compliance of Ubuntu system.
 # *
 # * Creation: April 09, 2021
-# * Change:   December 10, 2022
+# * Change:   November 24, 2022
 # *
 # * **************************************************************************
 # * Requirement
@@ -45,7 +45,7 @@ declare -ir APACHE2=0
 # ## Application informations.
 appYear="$(date +%Y)"
 appHeader="(c) 2004-${appYear}  Cybionet - Ugly Codes Division"
-appVersion='0.1.7'
+appVersion='0.1.6'
 
 # ## Declare initial status.
 declare -i critical=0

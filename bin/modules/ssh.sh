@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.7 - October 04, 2022
+# ## (c) 2004-2023  Cybionet - Ugly Codes Division
+# ## v1.8 - January 13, 2023
 
 
 # ############################################################################################
@@ -304,18 +304,18 @@ function sshdParam() {
  echo -n -e "\t\tClientAliveInterval: "
 
  if [ -z "${sshdClientAliveInterval}" ]; then
-   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mEnsure SSH \"ClientAliveInterval\" parameter is set to \"0\".\e[0m]"
+   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mEnsure SSH \"ClientAliveInterval\" parameter is set to \"300\".\e[0m]"
    critical=$((critical+1))
  else
-   if [ "${sshdClientAliveInterval}" -eq 0 ]; then
+   if [ "${sshdClientAliveInterval}" -eq 300 ]; then
      echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval})"
      pass=$((pass+1))
    else
-     if [[ "${sshdClientAliveInterval}" -le 300 && "${sshdClientAliveInterval}" -gt 0 ]]; then
-       echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[33mSetting the \"ClientAliveInterval\" parameter to \"0\". While the recommended setting is 300 seconds (5 minutes).\e[0m]"
+     if [[ "${sshdClientAliveInterval}" -le 300 && "${sshdClientAliveInterval}" -gt 300 ]]; then
+       echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[33mSetting the \"ClientAliveInterval\" parameter to \"300\".\e[0m]"
        pass=$((pass+1))
      else
-       echo -e "\e[31mCritical\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[31mSetting the \"ClientAliveInterval\" parameter to \"0\". While the recommended setting is 300 seconds (5 minutes).\e[0m]"
+       echo -e "\e[31mCritical\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[31mSetting the \"ClientAliveInterval\" parameter to \"300\".\e[0m]"
        critical=$((critical+1))
      fi
    fi
@@ -431,6 +431,25 @@ function sshd2fa(){
  fi
 }
 
+# ## Checks for the presence of the package.
+function checkAutoSSH() {
+ REQUIRED_PKG="${1}"
+ if dpkg-query -s "autossh" > /dev/null 2>&1; then
+   isRunning="$(ps -e | grep -c autossh)"
+
+   if [ "${isRunning}" -gt 0 ];then
+     echo -e "\n\tAutossh: \e[31mCritical\e[0m"
+     echo -e "\t\t\t[\e[31mPlease consider to uninstall autossh, it is not used. If the package is already uninstalled, use the 'dpkg -P autossh' command.\e[0m]"
+     critical=$((critical+1))
+   else
+     echo -e "\n\tAutossh: \e[33mWarning\e[0m"
+     echo -e "\t\t[\e[33;1;208mPlease consider to uninstall autossh if you don't use it.\e[0m]"
+     warning=$((warning+1))
+   fi
+ fi
+}
+
+
 #function checkPackage() {
 # REQUIRED_PKG="${1}"
 #
@@ -456,6 +475,7 @@ sshdParam
 sshdBanner
 sshdMacs
 sshdPowerShell
+checkAutoSSH
 
 # ## ssh-audit
 sshdSshAudit

@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.8 - December 10, 2022
+# ## (c) 2004-2023  Cybionet - Ugly Codes Division
+# ## v1.7 - January 11, 2023
 
 
 # ############################################################################################
@@ -71,7 +71,7 @@ function inputRulesNotUsed() {
    echo -e "\n\tACCEPT rules not used in the INPUT chain: \e[32mOk\e[0m"
    pass=$((pass+1))
  else
-   echo -e "\n\tSome ACCEPT rules in the INPUT chain are not used: \e[33mWarning\e[0m (${acceptInputRNU}) \n\t\t[\e[33mPlease consider to removing these unused rules.\e[0m]"
+   echo -e "\n\tSome ACCEPT rules in the INPUT chain are not used: \e[33mWarning\e[0m (${acceptInputRNU}) \n\t\t[\e[33mPlease consider to removing these rules.\e[0m]"
    badInRules=$(iptables -nvL INPUT | grep "0     0" | grep -v 'state' | grep 'ACCEPT')
    echo -e "${badInRules}"
 
@@ -86,7 +86,7 @@ function outputRulesNotUsed() {
    echo -e "\n\tACCEPT rules not used in the OUTPUT chain: \e[32mOk\e[0m"
    pass=$((pass+1))
  else
-   echo -e "\n\tSome ACCEPT rules in the OUTPUT chain are not used: \e[33mWarning\e[0m (${acceptOutputRNU}) \n\t\t[\e[33mPlease consider to removing these unused rules.\e[0m]"
+   echo -e "\n\tSome ACCEPT rules in the OUTPUT chain are not used: \e[33mWarning\e[0m (${acceptOutputRNU}) \n\t\t[\e[33mPlease consider to removing these.\e[0m]"
    badOutRules=$(iptables -nvL OUTPUT | grep "0     0" | grep -v 'state' | grep 'ACCEPT')
    echo -e "\t\t[${badOutRules}]"
    
@@ -186,7 +186,7 @@ function inputRulesNotUsed6() {
    echo -e "\n\tACCEPT rules not used in the INPUT chain: \e[32mOk\e[0m"
    pass=$((pass+1))
  else
-   echo -e "\n\tSome ACCEPT rules in the INPUT chain are not used: \e[33mWarning\e[0m (${acceptInputRNU6}) \n\t\t[\e[33mPlease consider to removing these unused rules.\e[0m]"
+   echo -e "\n\tSome ACCEPT rules in the INPUT chain are not used: \e[33mWarning\e[0m (${acceptInputRNU6}) \n\t\t[\e[33mPlease consider to removing these.\e[0m]"
    warning=$((warning+1))
  fi
 }
@@ -198,7 +198,7 @@ function outputRulesNotUsed6() {
    echo -e "\tACCEPT rules not used in the OUTPUT chain: \e[32mOk\e[0m"
    pass=$((pass+1))
  else
-   echo -e "\tSome ACCEPT rules in the OUTPUT chain are not used: \e[33mWarning\e[0m (${acceptOutputRNU6}) \n\t\t[\e[33mPlease consider to removing these unused rules.\e[0m]"
+   echo -e "\tSome ACCEPT rules in the OUTPUT chain are not used: \e[33mWarning\e[0m (${acceptOutputRNU6}) \n\t\t[\e[33mPlease consider to removing these.\e[0m]"
    warning=$((warning+1))
  fi
 }

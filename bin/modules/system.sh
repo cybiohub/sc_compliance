@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v2.0 - December 10, 2022
+# ## (c) 2004-2023  Cybionet - Ugly Codes Division
+# ## v1.10 - January 10, 2023
 
 
 # ############################################################################################
@@ -123,16 +123,28 @@ function repoCronPerm() {
 
  for crons in "${cronrepo[@]}"
  do
-   cronPerm="$(stat -c "%a" /etc/cron."${crons}")"	 
+   cronPerm="$(stat -c "%a" /etc/crontab)"	 
 
    if [ "${cronPerm}" -eq 700 ]; then
      echo -e "\t\tcron.${crons}: \e[32mOk\e[0m (${cronPerm})"
      pass=$((pass+1))
    else
-     echo -e "\t\tcron.${crons}: \e[31mCritical\e[0m (${cronPerm}) \n\t\t\t[\e[31mEnsure permissions on /etc/cron.${crons} are configured to 700.\e[0m]"
+     echo -e "\t\tcron.${crons}: \e[31mCritical\e[0m (${cronPerm}) \n\t\t\t[\e[31mEnsure permissions on /etc/cron.${crons} are configured to 600.\e[0m]"
      critical=$((critical+1))
    fi
  done
+}
+
+function repoCrontabPerm() {
+ crontabPerm="$(stat -c "%a" /etc/cron."${crons}")"
+
+ if [ "${crontabPerm}" -eq 600 ]; then
+   echo -e "\n\t\tcrontab file: \e[32mOk\e[0m (${crontabPerm})"
+   pass=$((pass+1))
+ else
+   echo -e "\n\t\tcrontab file: \e[31mCritical\e[0m (${crontabPerm}) \n\t\t\t[\e[31mEnsure permissions on /etc/crontab are configured to 600.\e[0m]"
+   critical=$((critical+1))
+ fi
 }
 
 
@@ -152,6 +164,7 @@ sourcesRepo
 # ## Header.
 echo -e "\n\e[34m[CRON]\e[0m"
 repoCronPerm
+repoCrontabPerm
 
 # ## Return status.
 return "${pass}"
