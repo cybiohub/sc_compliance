@@ -71,7 +71,7 @@ function inputRulesNotUsed() {
    echo -e "\n\tACCEPT rules not used in the INPUT chain: \e[32mOk\e[0m"
    pass=$((pass+1))
  else
-   echo -e "\n\tSome ACCEPT rules in the INPUT chain are not used: \e[33mWarning\e[0m (${acceptInputRNU}) \n\t\t[\e[33mPlease consider to removing these rules.\e[0m]"
+   echo -e "\n\tSome ACCEPT rules in the INPUT chain are not used: \e[33mWarning\e[0m (${acceptInputRNU}) \n\t\t[\e[33mPlease consider to removing these unused rules.\e[0m]"
    badInRules=$(iptables -nvL INPUT | grep "0     0" | grep -v 'state' | grep 'ACCEPT')
    echo -e "${badInRules}"
 
@@ -259,6 +259,17 @@ function pkgFail2ban() {
 
 
 function f2bFilters() {
+ echo -e "\tFilters enabled: "
+
+ filters=$(fail2ban-client status | grep "Jail list" | grep -E -o "([-[:alnum:]]*, )*[-[:alnum:]]*$" | sed 's/,//g' | tr " " "\n")
+
+for x in $filters
+do
+echo -e "\t\t- [$x]"
+done
+}
+
+function A_f2bFilters() {
  #declare -r wantedFilters='ssh,sshd,sshd-authfail,sshd-ddos,sshd-deny,sshd-proto'
  declare -a allFilters=($(fail2ban-client status | grep "Jail list" | grep -E -o "([-[:alnum:]]*, )*[-[:alnum:]]*$" | sed 's/,//g'))
 

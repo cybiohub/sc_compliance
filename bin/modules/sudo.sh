@@ -31,6 +31,11 @@ function sudoLog() {
  if [ "${sudoerFiles}" -gt 0 ]; then
    for file in /etc/sudoers.d/*
    do
+
+   if [[ ! -f "$file" || "$file" == *.dpkg-dist* ]]; then
+    continue
+   fi
+
      mySudoer="${file}"
 
      sudoerDStatus=$(grep -v "Defaults logfile=" "${mySudoer}" | grep -v "^#" | sed '/^\s*$/d' | wc -l)
@@ -39,7 +44,7 @@ function sudoLog() {
      if [[ ! "${sudoerFile}" == "README" ]]; then
        if [ "${sudoerDStatus}" -eq 0 ]; then
          echo -e "\t\tSource \"${sudoerFile}\": \e[31mCritical\e[0m"
-         echo -e "\t\t\t[\e[31mAdd 'Defaults logfile=\"/var/log/sudo.log\" to this file'.\e[0m]"
+         echo -e "\t\t\t[\e[31mAdd 'Defaults logfile=\"/var/log/sudo.log\"' to this file.\e[0m]"
          critical=$((critical+1))
        else
          echo -e "\t\tSource \"${sudoerFile}\": \e[32mOk\e[0m"
@@ -85,8 +90,8 @@ function sudoLogCheck() {
  echo -e -n "\n\tSudo Logfile: "
 
  if (( "${sudoLog}" == 1 )); then
-   echo -n -e "\e[33m${sudoLog}\e[0m \e[32mOk\e[0m ("
-   echo "${nbr})"
+   echo -n -e "\e[32mOk\e[0m ("
+   echo "${sudoLog})"
    pass=$((pass+1))
  else
    echo -e "\e[31mCritical\e[0m"

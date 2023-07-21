@@ -1,11 +1,33 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.3 - April 06, 2022
+# ## (c) 2004-2023  Cybionet - Ugly Codes Division
+# ## v1.6 - June 28, 2023
 
 
 # ############################################################################################
 # ## USERS
+
+# ## Duplicate UID [6.2.16 Ensure no duplicate UIDs exist]
+function uniqueUID() {
+ uniqUid=$(getent passwd | cut -d: -f3 | sort -n | uniq -d | awk -F " " '{print $1","}' | sed -z 's/\n//g' | sed 's/,$//g')
+
+ if [ ! -z "${uniqUid}" ]; then
+  echo -e "\tDuplicate UIDs exist: \e[31mError\e[0m"
+  echo -e "\t\tConflicting UID: ${uniqUid}\n"
+  critical=$((critical+1))
+ fi
+}
+
+# ## Duplicate User [6.2.18 Ensure no duplicate user names exist]
+function uniqueUser() {
+ uniqUser=$(getent passwd | cut -d: -f1 | sort -n | uniq -d | awk -F " " '{print $1","}' | sed -z 's/\n//g' | sed 's/,$//g')
+
+ if [ ! -z "${uniqUser}" ]; then
+  echo -e "\tDuplicate Users exist: \e[31mError\e[0m"
+  echo -e "\t\tConflicting User: ${uniqUser}\n"
+  critical=$((critical+1))
+ fi
+}
 
 # ##
 function userIntegrity() {
@@ -66,7 +88,10 @@ function passMin() {
 echo -e "\n\e[34m[USERS]\e[0m"
 
 # ## Check.
-userIntegrity
+uniqueUID
+uniqueUser
+
+#userIntegrity
 loginDefs
 passMin
 

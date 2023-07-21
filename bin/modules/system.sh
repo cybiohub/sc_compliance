@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.10 - January 10, 2023
+# ## v1.11 - July 17, 2023
 
 
 # ############################################################################################
@@ -70,7 +70,7 @@ function sourcesRepo() {
 
  osVersion=$(</etc/os-release grep 'VERSION_CODENAME' | awk -F "=" '{print $2}')
 
- # ## Check sourced.list file.
+ # ## Check sources.list file.
  sourceSStatus=$(</etc/apt/sources.list grep -v "${osVersion}" | sed '/^\s*$/d' | grep -c -v "^#")
 
  if [ "${sourceSStatus}" -ne 0 ]; then
@@ -123,7 +123,7 @@ function repoCronPerm() {
 
  for crons in "${cronrepo[@]}"
  do
-   cronPerm="$(stat -c "%a" /etc/crontab)"	 
+   cronPerm="$(stat -c "%a" /etc/cron."${crons}")"
 
    if [ "${cronPerm}" -eq 700 ]; then
      echo -e "\t\tcron.${crons}: \e[32mOk\e[0m (${cronPerm})"
@@ -136,10 +136,11 @@ function repoCronPerm() {
 }
 
 function repoCrontabPerm() {
- crontabPerm="$(stat -c "%a" /etc/cron."${crons}")"
+ echo -e '\n\tCrontab file:'
+ crontabPerm="$(stat -c "%a" /etc/crontab)"	 
 
  if [ "${crontabPerm}" -eq 600 ]; then
-   echo -e "\n\t\tcrontab file: \e[32mOk\e[0m (${crontabPerm})"
+   echo -e "\t\tcrontab file: \e[32mOk\e[0m (${crontabPerm})"
    pass=$((pass+1))
  else
    echo -e "\n\t\tcrontab file: \e[31mCritical\e[0m (${crontabPerm}) \n\t\t\t[\e[31mEnsure permissions on /etc/crontab are configured to 600.\e[0m]"

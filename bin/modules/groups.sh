@@ -1,11 +1,22 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.6 - September 08, 2022
+# ## (c) 2004-2023  Cybionet - Ugly Codes Division
+# ## v1.7 - June 28, 2023
 
 
 # ############################################################################################
 # ## GROUPS
+
+# ## Duplicate GID [6.2.17 Ensure no duplicate GIDs exist]
+function uniqueGID() {
+ uniqGid=$(getent group | cut -d: -f3 | sort -n | uniq -d | awk -F " " '{print $1","}' | sed -z 's/\n//g' | sed 's/,$//g')
+
+ if [ ! -z "${uniqGid}" ]; then
+  echo -e "\n\tDuplicate GIDs exist: \e[31mError\e[0m"
+  echo -e "\t\tConflicting GID: ${uniqGid}"
+  critical=$((critical+1))
+ fi
+}
 
 function groupIntegrity() {
  grpSanity="$(grpck -r)"
@@ -15,7 +26,7 @@ function groupIntegrity() {
    pass=$((pass+1))
  else
    echo -e "\n\tGroups file integrity: \e[31mError\e[0m"
-   echo -e "Message:\n ${grpSanity}"
+   echo -e "\t\tMessage:\n ${grpSanity}"
    critical=$((critical+1))
  fi
 }
@@ -78,6 +89,8 @@ echo -e "\n\e[34m[GROUPS]\e[0m"
 # ## Check.
 groupIntegrity
 groupCheck
+
+uniqueGID
 
 # ## Return status.
 return "${pass}"

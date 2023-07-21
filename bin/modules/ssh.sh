@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.8 - January 13, 2023
+# ## v1.11 - July 19, 2023
 
 
 # ############################################################################################
@@ -54,9 +54,10 @@ function sshdBanner() {
 
 # ## Restricting which users can remotely access the system via SSH will help ensure that only authorized users access the system.
 function sshdAccessLimited() {
- sshdLimited=$(grep -ie 'AllowUsers' -ie 'AllowGroups' /etc/ssh/sshd_config | grep -v '^#' | awk -F " " '{print $2}')
+  sshdLimited=$(grep -ie 'AllowUsers' -ie 'AllowGroups' /etc/ssh/sshd_config | grep -v '^#' | awk -F " " '{print $2","}' | sed -z 's/\n//g' | sed 's/,$//g')
+# sshdLimited=$(grep -ie 'AllowUsers' -ie 'AllowGroups' /etc/ssh/sshd_config | grep -v '^#' | awk -F " " '{print $2}')
 
- echo -n -e "\n\tLimited Access: "
+ echo -n -e "\n\tAllowed Access: "
 
  if [ -z "${sshdLimited}" ]; then
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mPlease consider adding \"AllowUsers\" or \"AllowGroups\" to SSH.\e[0m]"
@@ -98,8 +99,8 @@ function sshdSshAudit() {
    echo -e "\t\t[\e[33mPlease consider to install ssh-audit.\e[0m]"
    warning=$((warning+1))
  else
-   sshAuditFail=$(ssh-audit -lfail -p"${port}" "${listen}" | wc -l)
-   sshAuditWarn=$(ssh-audit -lwarn -p"${port}" "${listen}" | wc -l)
+   sshAuditFail=$(ssh-audit -lfail -p"${port}" "${listen}" | sed '/^\s*$/d' | wc -l)
+   sshAuditWarn=$(ssh-audit -lwarn -p"${port}" "${listen}" | sed '/^\s*$/d' | wc -l)
 
    echo -e "\n\tssh-audit: \e[32mInstalled\e[0m"
 
@@ -108,28 +109,14 @@ function sshdSshAudit() {
      critical=$((critical+1))
    else
      if [ "${sshAuditWarn}" -gt 0 ]; then
-       echo -e "\t\t[\e[33mRun \"ssh-audit -p${port} ${listen}\", and make correction in sshd_config if needed.\e[0m]"
+       echo -e "\t\t[\e[33;1;208mRun ssh-audit -p${port} ${listen}, and make correction required in sshd_config.\e[0m]"
        warning=$((warning+1))
      else
-       echo -e "\t\t[\e[33;1;208mRun ssh-audit -p${port} ${listen}, and make correction required in sshd_config.\e[0m]"
+       echo -e "\t\t[\e[33mRun \"ssh-audit -p${port} ${listen}\", and make correction in sshd_config if needed.\e[0m]"
        pass=$((pass+1))
      fi
    fi
  fi
-}
-
-# ## UNUSED
-function sshdAuditWarn() {
- echo -e "\tPermission on sshd_config: \e[32mOk\e[0m (444)"
- ssh-audit --level=warn -p22 192.168.0.47
- #ssh-audit --level=warn -p2222 127.0.0.1
-}
-
-# ## UNUSED
-function sshdAuditFail() {
- echo -e "\tPermission on sshd_config: \e[32mOk\e[0m (444)"
- ssh-audit --level=fail -p22 192.168.0.47
- #ssh-audit --level=fail -p2222 127.0.0.1
 }
 
 # ## UNUSED

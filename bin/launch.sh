@@ -5,12 +5,12 @@
 # * Author:        	(c) 2004-2023  Cybionet - Ugly Codes Division
 # *
 # * File:               launch.sh
-# * Version:            0.1.6
+# * Version		0.1.7
 # *
 # * Description:        Script to check compliance of Ubuntu system.
 # *
 # * Creation: April 09, 2021
-# * Change:   November 24, 2022
+# * Change:   July 18, 2023
 # *
 # * **************************************************************************
 # * Requirement
@@ -45,7 +45,7 @@ declare -ir APACHE2=0
 # ## Application informations.
 appYear="$(date +%Y)"
 appHeader="(c) 2004-${appYear}  Cybionet - Ugly Codes Division"
-appVersion='0.1.6'
+appVersion='0.1.7'
 
 # ## Declare initial status.
 declare -i critical=0
@@ -68,7 +68,6 @@ if [ "${1}" == 'version' ] ; then
  exit 0
 fi
 
-
 # ## Check if the script are running with sudo or under root user.
 if [ "${EUID}" -ne 0 ] ; then
   echo -e "\n\e[34m${appHeader}\e[0m\n"
@@ -80,13 +79,11 @@ else
   echo -e ""
 fi
 
-
 # ## Check if bc package is installed.
 if ! dpkg-query -s 'bc' > /dev/null 2>&1; then
   echo -e "\n\n\n\e[33mCAUTION: Installing missing dependancy (bc).\e[0m"
   apt-get -y install bc
 fi
-
 
 
 #############################################################################################
