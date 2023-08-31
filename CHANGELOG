@@ -3,6 +3,7 @@ V0.1.9 - 2023-06-27
 ## Fixed
  - Exclude file README.dpkg-dist in sudoers.d research.
  - Display or multiple AllowUsers in sshd_config.
+ - Adjusted the correction text to be made for the cron directory.
 
 
 V0.1.8 - 2023-01-11

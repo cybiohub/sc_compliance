@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.11 - July 17, 2023
+# ## v1.12 - August 31, 2023
 
 
 # ############################################################################################
@@ -129,7 +129,7 @@ function repoCronPerm() {
      echo -e "\t\tcron.${crons}: \e[32mOk\e[0m (${cronPerm})"
      pass=$((pass+1))
    else
-     echo -e "\t\tcron.${crons}: \e[31mCritical\e[0m (${cronPerm}) \n\t\t\t[\e[31mEnsure permissions on /etc/cron.${crons} are configured to 600.\e[0m]"
+     echo -e "\t\tcron.${crons}: \e[31mCritical\e[0m (${cronPerm}) \n\t\t\t[\e[31mEnsure permissions on /etc/cron.${crons} are configured to 700.\e[0m]"
      critical=$((critical+1))
    fi
  done
