@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.2 - April 06, 2022
+# ## (c) 2004-2023  Cybionet - Ugly Codes Division
+# ## v1.3 - November 05, 2023
 
 
 # grep -i denied /var/log/audit/audit.log   Pour trouver les apparmor="DENIED"
@@ -22,6 +22,8 @@ function pkgAuditd() {
    echo -e "\t\t[\e[31mPlease consider to install ${APPDEP}.\e[0m]"
    critical=$((critical+1))
  else
+   echo -e "\n\tAuditd: \e[32mInstalled\e[0m\n"
+
    sysAuditd
  fi
 }

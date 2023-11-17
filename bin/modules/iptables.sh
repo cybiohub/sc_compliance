@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.7 - January 11, 2023
+# ## v1.8 - November 05, 2023
 
 
 # ############################################################################################
@@ -53,7 +53,7 @@ function iptablesCountry() {
 }
 
 function iptablesIpset() {
- ipSet="$(iptables -S | grep "\-match-set" | grep -c -i 'tor')"
+ ipSet="$(iptables -S | grep "\-match-set" | grep -i 'tor' | grep -c 'DROP')"
 
  if [ "${ipSet}" -eq 0 ]; then
    echo -e '\tTor exit nodes filtering: \e[33mWarning\e[0m\n\t\t[\e[33mPlease consider to add filtering "Tor exit nodes" rule with ipset.\e[0m]'
@@ -71,7 +71,7 @@ function inputRulesNotUsed() {
    echo -e "\n\tACCEPT rules not used in the INPUT chain: \e[32mOk\e[0m"
    pass=$((pass+1))
  else
-   echo -e "\n\tSome ACCEPT rules in the INPUT chain are not used: \e[33mWarning\e[0m (${acceptInputRNU}) \n\t\t[\e[33mPlease consider to removing these unused rules.\e[0m]"
+   echo -e "\n\tSome ACCEPT rules in the INPUT chain are not used: \e[33mWarning\e[0m (${acceptInputRNU}) \n\t\t[\e[33mPlease consider to removing these unused rules. Of use the -s option of iptables to set multiple source IP addresses.\e[0m]"
    badInRules=$(iptables -nvL INPUT | grep "0     0" | grep -v 'state' | grep 'ACCEPT')
    echo -e "${badInRules}"
 
@@ -241,7 +241,7 @@ function pkgFail2ban() {
  # ## Check if fail2ban package is installed.
  # ## Result: 0=Missing, 1=Installed
  if [ "${dependency}" -eq 0 ] && [ "${crowdsecExist}" -eq 0 ]; then
-   echo -e "\t${APPDEP}: \e[31mCritical\e[0m"
+   echo -e "\t${APPDEP^}: \e[31mCritical\e[0m"
    echo -e "\t\t[\e[31mPlease consider to install ${APPDEP}.\e[0m]"
    critical=$((critical+1))
  else

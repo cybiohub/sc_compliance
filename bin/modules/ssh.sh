@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.11 - July 19, 2023
+# ## v1.12 - Novembre 05, 2023
 
 
 # ############################################################################################
@@ -102,7 +102,7 @@ function sshdSshAudit() {
    sshAuditFail=$(ssh-audit -lfail -p"${port}" "${listen}" | sed '/^\s*$/d' | wc -l)
    sshAuditWarn=$(ssh-audit -lwarn -p"${port}" "${listen}" | sed '/^\s*$/d' | wc -l)
 
-   echo -e "\n\tssh-audit: \e[32mInstalled\e[0m"
+   echo -e "\n\tSsh-audit: \e[32mInstalled\e[0m"
 
    if [ "${sshAuditFail}" -gt 0 ]; then
      echo -e "\t\t[\e[31mRun \"ssh-audit -p${port} ${listen}\", and make correction in sshd_config.\e[0m]"
@@ -404,7 +404,7 @@ function sshd2fa(){
 
  if [[ "${sshdMfa}" -eq 0 ]]; then
    # ## apt-get install libpam-google-authenticator
-   echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider using MFA on the SSHD service.\e[0m]"
+   echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider using MFA with libpam-google-authenticator on the SSHD service.\e[0m]"
    warning=$((warning+1))
  else
    if [[ "${sshdMfa}" -eq 1 ]]; then

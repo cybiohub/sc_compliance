@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.4 - April 05, 2022
+# ## v1.5 - November 05, 2023
 
 
 # ############################################################################################
@@ -13,9 +13,14 @@
 
 
 # ##
+function authFileCheck() {
+  find /var/backup/ -type f \( -name "passwd*" -o -name "gshadow*" -o -name "shadow*" -o -name "group*" \) 2>&-
+
+}
+
+# ##
 function orderExecutionVul() {
  declare -i isEmpty
- #isEmpty="$(ls -A /usr/local/bin/ | wc -l)"
  isEmpty="$(find /usr/local/bin/ -type f -printf '%T@ %f\n' | cut -d' ' -f2- | wc -l)"
  if [ "${isEmpty}" -eq 0 ]; then
    echo -e "\tLocal Bin Directory: \e[32mOk\e[0m (empty)"
