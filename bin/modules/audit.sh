@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.3 - November 05, 2023
+# ## v1.4 - November 20, 2023
 
 
 # grep -i denied /var/log/audit/audit.log   Pour trouver les apparmor="DENIED"
@@ -18,13 +18,29 @@ function pkgAuditd() {
  # ## Check if auditd package is installed.
  # ## Result: 0=Missing, 1=Installed
  if [ "${dependency}" = 0 ]; then
-   echo -e "\t${APPDEP}: \e[31mCritical\e[0m"
+   echo -e "\n\t${APPDEP^}: \e[31mCritical\e[0m"
    echo -e "\t\t[\e[31mPlease consider to install ${APPDEP}.\e[0m]"
    critical=$((critical+1))
  else
    echo -e "\n\tAuditd: \e[32mInstalled\e[0m\n"
 
    sysAuditd
+ fi
+}
+
+# ##
+function pkgAudispd() {
+ APPDEP='audispd-plugins'
+ checkPackage "${APPDEP}"
+
+ # ## Check if audispd-plugins package is installed.
+ # ## Result: 0=Missing, 1=Installed
+ if [ "${dependency}" = 0 ]; then
+   echo -e "\n\t${APPDEP^}: \e[31mCritical\e[0m"
+   echo -e "\t\t[\e[31mPlease consider to install ${APPDEP}.\e[0m]"
+   critical=$((critical+1))
+ else
+   echo -e "\n\tAudispd plugins: \e[32mInstalled\e[0m\n"
  fi
 }
 
@@ -150,6 +166,7 @@ echo -e "\n\e[34m[AUDITD]\e[0m"
 
 # ## Check.
 pkgAuditd
+pkgAudispd
 
 # ## Return status.
 return "${pass}"

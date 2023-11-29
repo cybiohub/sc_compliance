@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.12 - Novembre 05, 2023
+# ## v1.13 - November 29, 2023
 
 
 # ############################################################################################
@@ -239,14 +239,14 @@ function sshdParam() {
  echo -n -e "\t\tClientAliveCountMax: "
 
  if [ -z "${sshdCltAlive}" ]; then
-   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"ClientAliveCountMax\" parameter to \"0\".\e[0m]"
+   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to set the \"ClientAliveCountMax\" parameter to \"1\".\e[0m]"
    critical=$((critical+1))
  else
-   if [ "${sshdCltAlive}" -eq 0 ]; then
+   if [ "${sshdCltAlive}" -eq 1 ]; then
      echo -e "\e[32mOk\e[0m (${sshdCltAlive})"
      pass=$((pass+1))
    else
-     echo -e "\e[31mCritical\e[0m (${sshdCltAlive}) \n\t\t\t[\e[31mMake sure to assign the value \"0\" to the \"ClientAliveCountMax\" parameter.\e[0m]"
+     echo -e "\e[31mCritical\e[0m (${sshdCltAlive}) \n\t\t\t[\e[31mMake sure to assign the value \"1\" to the \"ClientAliveCountMax\" parameter.\e[0m]"
      critical=$((critical+1))
    fi
  fi
@@ -291,18 +291,18 @@ function sshdParam() {
  echo -n -e "\t\tClientAliveInterval: "
 
  if [ -z "${sshdClientAliveInterval}" ]; then
-   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mEnsure SSH \"ClientAliveInterval\" parameter is set to \"300\".\e[0m]"
+   echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mEnsure SSH \"ClientAliveInterval\" parameter is set to \"600\" or less.\e[0m]"
    critical=$((critical+1))
  else
-   if [ "${sshdClientAliveInterval}" -eq 300 ]; then
+   if [ "${sshdClientAliveInterval}" -le 600 ]; then
      echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval})"
      pass=$((pass+1))
    else
-     if [[ "${sshdClientAliveInterval}" -le 300 && "${sshdClientAliveInterval}" -gt 300 ]]; then
-       echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[33mSetting the \"ClientAliveInterval\" parameter to \"300\".\e[0m]"
+     if [ "${sshdClientAliveInterval}" -gt 600 ]; then
+       echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[33mSetting the \"ClientAliveInterval\" parameter to \"600\" or less.\e[0m]"
        pass=$((pass+1))
      else
-       echo -e "\e[31mCritical\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[31mSetting the \"ClientAliveInterval\" parameter to \"300\".\e[0m]"
+       echo -e "\e[31mCritical\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[31mSetting the \"ClientAliveInterval\" parameter to \"600\" or less.\e[0m]"
        critical=$((critical+1))
      fi
    fi
