@@ -1,6 +1,18 @@
+V0.1.13 - 2024-03-29
+
+## Added
+ - Checking that there are no users who are not serving.
+
+
+V0.1.12 - 2024-01-02
+
+## Added
+ - Add update script via git command.
+
+
 V0.1.11 - 2023-11-20
 
-##Fixed
+## Fixed
  - Adjusted the text for auditd. 
 
 ## Added

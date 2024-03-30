@@ -1,13 +1,13 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.4 - November 05, 2023
+# ## v1.5 - December 10, 2023
 
 
 # ############################################################################################
 # ## VARIABLES
 
-readonly UNWANTEDPKG='minidlna nmap rsh-server samba snmpd tcpdump telnet'
+readonly UNWANTEDPKG='minidlna nis nmap rsh-client rsh-server samba snmpd talk tcpdump telnet'
 readonly WANTEDPKG='crowdsec lynis ubuntu-advantage-tools' # aide
 
 

@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.2 - December 20, 2022
+# ## (c) 2004-2024  Cybionet - Ugly Codes Division
+# ## v1.3 - February 02, 2024
 
 
 # ############################################################################################
@@ -64,10 +64,11 @@ function sudoLog() {
 # ## Access to the root account via su should be restricted to the 'root' group
 # ## [CCE-15047-4]
 function wheelGrpCheck() {
- wheelGrp=$(grep pam_wheel.so /etc/pam.d/su | grep "^# auth" | grep "use_uid$" | wc -l)
- 
- grpWheel="$(awk -F':' '/wheel/{print $4}' /etc/group)"
- nbr=$(echo "${grpWheel}" | awk -F ":" '{print $1}' | awk -F "," '{print NF}' )
+ #wheelGrp=$(grep pam_wheel.so /etc/pam.d/su | grep "^# auth" | grep "use_uid$" | wc -l)
+ #grpWheel="$(awk -F':' '/wheel/{print $4}' /etc/group)"
+
+ wheelGrp=$(grep 'required pam_wheel.so' /etc/pam.d/su | grep -v "^# auth" | grep "use_uid$" | wc -l)
+ grpWheel=$(awk -F':' '/adm:x:4/{print $4}' /etc/group | awk -F ":" '{print $1}' | awk -F "," '{print NF}')
 
  echo -e -n "\n\tGroup wheel: "
 

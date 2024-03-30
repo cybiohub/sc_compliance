@@ -81,6 +81,35 @@ function passMin() {
 }
 
 
+# ## Consider deleting users who are not used.
+# ## Consider deleting users who are not used.
+function unusedUsers() {
+ lastUser=$(getent passwd | grep -vE 'nobody|false' | awk -F: '$3 > 999 {print $1}')
+
+ for luser in ${lastUser[@]}; do
+   lastLog=$(lastlog -b 0 -t 90 -u "${luser}")
+
+   # ## Show unused users.
+   if [ -z "${lastLog}" ]; then
+     unusedUsers+=("${luser}")
+   fi
+ done
+
+ if [ ! -z ${#unusedUsers[@]} ]; then
+   echo -e -n "\n\tUnused User: \e[31mCritical\e[0m (${#unusedUsers[@]})\n\t\t[\e[31mConsider deleting users who are not used.\e[0m]\n"
+
+   for uusers in "${unusedUsers[@]}"
+   do
+     echo -e "\t\t   - $uusers"
+   done
+   critical=$((critical+1))
+ else
+   echo -e -n "\n\tUnused User: \e[32mOk\e[0m\n"
+   pass=$((pass+1))
+ fi
+}
+
+
 # ############################################################################################
 # ## EXECUTION
 
@@ -94,6 +123,9 @@ uniqueUser
 #userIntegrity
 loginDefs
 passMin
+
+unusedUsers
+
 
 # ## Return status.
 return "${pass}"
