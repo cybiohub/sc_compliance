@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.5 - November 05, 2023
+# ## (c) 2004-2024  Cybionet - Ugly Codes Division
+# ## v1.5 - May 22, 2024
 
 
 # ############################################################################################
@@ -70,7 +70,7 @@ function threeFingerSalute() {
    pass=$((pass+1))
  else
   echo -e '\tCtrl+Alt+Del Disabled: \e[31mCritical\e[0m\n\t\t[\e[31mDisable the "Ctrl+Alt+Del on the operating system.\e[0m]'
-  echo -e [\t\t\e[31msystemctl mask ctrl-alt-del.target\e[0m]
+  echo -e '[\t\t\e[31msystemctl mask ctrl-alt-del.target\e[0m]'
    critical=$((critical+1))
  fi
 }

@@ -82,7 +82,6 @@ function passMin() {
 
 
 # ## Consider deleting users who are not used.
-# ## Consider deleting users who are not used.
 function unusedUsers() {
  lastUser=$(getent passwd | grep -vE 'nobody|false' | awk -F: '$3 > 999 {print $1}')
 

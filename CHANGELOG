@@ -2,6 +2,10 @@ V0.1.13 - 2024-03-29
 
 ## Added
  - Checking that there are no users who are not serving.
+ - Add option to force IPv4 or IPv6 for update.sh.
+
+## Changed
+ - Add path to the update.sh to be launch everywhere.
 
 
 V0.1.12 - 2024-01-02
