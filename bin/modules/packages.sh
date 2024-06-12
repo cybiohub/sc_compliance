@@ -8,7 +8,12 @@
 # ## VARIABLES
 
 readonly UNWANTEDPKG='minidlna nis nmap rsh-client rsh-server samba snmpd talk tcpdump telnet'
-readonly WANTEDPKG='crowdsec lynis ubuntu-advantage-tools' # aide
+# ## Other Linux OS.
+readonly WANTEDPKG='crowdsec lynis aide'
+# ## Debian Linux OS.
+readonly DWANTEDPKG='crowdsec lynis'
+# ## Ubuntu Linux OS.
+readonly UWANTEDPKG='crowdsec lynis ubuntu-advantage-tools'
 
 
 # ############################################################################################
@@ -16,7 +21,17 @@ readonly WANTEDPKG='crowdsec lynis ubuntu-advantage-tools' # aide
 
 function pkgWanted() {
  echo -e "\tWanted packages:"
- declare -a checkPkgW=($(printf "${WANTEDPKG}"))
+
+ if [ -x "$(command -v lsb_release)" ]; then
+   distro=$(lsb_release -is)
+   if [ "$distro" = "Ubuntu" ]; then
+     declare -a checkPkgW=($(printf "${UWANTEDPKG}"))
+   elif [ "$distro" = "Debian" ]; then
+     declare -a checkPkgW=($(printf "${UWANTEDPKG}"))
+   else
+     declare -a checkPkgW=($(printf "${WANTEDPKG}"))
+   fi
+ fi
 
  for item in "${checkPkgW[@]}"; do
    checkPackage "${item}"
@@ -53,6 +68,10 @@ function pkgUnwanted() {
    fi
  done
 }
+
+
+
+
 
 # ## Checks for the presence of the package.
 function checkPackage() {

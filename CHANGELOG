@@ -1,3 +1,13 @@
+V0.1.14 - 2024-06-11
+
+## Added
+ - Now checks the operating system for the desired packages in packages module.
+
+## Fixed
+ - Patch to captures the format of the "ClientAliveInterval" parameter if it contains letters in ssh module.
+ - Fixed bad logic in interpreting unused users in users module.
+
+
 V0.1.13 - 2024-03-29
 
 ## Added

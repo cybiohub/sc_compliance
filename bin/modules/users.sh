@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.6 - June 28, 2023
+# ## (c) 2004-2024  Cybionet - Ugly Codes Division
+# ## v1.7 - June 11, 2024
 
 
 # ############################################################################################
@@ -94,7 +94,10 @@ function unusedUsers() {
    fi
  done
 
- if [ ! -z ${#unusedUsers[@]} ]; then
+ if [ "${#unusedUsers[@]}" == 0 ]; then
+   echo -e -n "\n\tUnused User: \e[32mOk\e[0m\n"
+   pass=$((pass+1))
+ else
    echo -e -n "\n\tUnused User: \e[31mCritical\e[0m (${#unusedUsers[@]})\n\t\t[\e[31mConsider deleting users who are not used.\e[0m]\n"
 
    for uusers in "${unusedUsers[@]}"
@@ -102,9 +105,6 @@ function unusedUsers() {
      echo -e "\t\t   - $uusers"
    done
    critical=$((critical+1))
- else
-   echo -e -n "\n\tUnused User: \e[32mOk\e[0m\n"
-   pass=$((pass+1))
  fi
 }
 

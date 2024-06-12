@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2024  Cybionet - Ugly Codes Division
-# ## v1.14 - May 17, 2024
+# ## v1.15 - June 11, 2024
 
 
 # ############################################################################################
@@ -294,21 +294,17 @@ function sshdParam() {
    echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mEnsure SSH \"ClientAliveInterval\" parameter is set to \"600\" or less.\e[0m]"
    critical=$((critical+1))
  else
-   if [[ "${sshdClientAliveInterval}" =~ ^-?[0-9]+$ ]] ; then
-     echo -e "\e[36mBUG:\e[0m (${sshdClientAliveInterval})"
-   else
-     if [ "${sshdClientAliveInterval}" -le 600 ]; then
+   if [[ "${sshdClientAliveInterval}" =~ ^[0-9]+$ ]]; then
+     if (( sshdClientAliveInterval >= 0 && sshdClientAliveInterval <= 600 )); then
        echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval})"
        pass=$((pass+1))
      else
-       if [ "${sshdClientAliveInterval}" -gt 600 ]; then
-         echo -e "\e[32mOk\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[33mSetting the \"ClientAliveInterval\" parameter to \"600\" or less.\e[0m]"
-         pass=$((pass+1))
-       else
-         echo -e "\e[31mCritical\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[31mSetting the \"ClientAliveInterval\" parameter to \"600\" or less.\e[0m]"
-         critical=$((critical+1))
-       fi
+       echo -e "\e[31mCritical\e[0m (${sshdClientAliveInterval}) \n\t\t\t[\e[31mSetting the \"ClientAliveInterval\" parameter to \"600\" or less.\e[0m]"
+       critical=$((critical+1))
      fi
+   else
+     echo -e "\e[36mBUG:\e[0m (${sshdClientAliveInterval})"
+     critical=$((critical+1))
    fi
  fi
 
