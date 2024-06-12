@@ -27,7 +27,7 @@ function pkgWanted() {
    if [ "$distro" = "Ubuntu" ]; then
      declare -a checkPkgW=($(printf "${UWANTEDPKG}"))
    elif [ "$distro" = "Debian" ]; then
-     declare -a checkPkgW=($(printf "${UWANTEDPKG}"))
+     declare -a checkPkgW=($(printf "${DWANTEDPKG}"))
    else
      declare -a checkPkgW=($(printf "${WANTEDPKG}"))
    fi
