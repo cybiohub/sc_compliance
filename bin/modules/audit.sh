@@ -1,6 +1,6 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2023  Cybionet - Ugly Codes Division
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
 # ## v1.4 - November 20, 2023
 
 
@@ -167,6 +167,7 @@ echo -e "\n\e[34m[AUDITD]\e[0m"
 # ## Check.
 pkgAuditd
 pkgAudispd
+
 
 # ## Return status.
 return "${pass}"

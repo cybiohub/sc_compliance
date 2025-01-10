@@ -1,11 +1,66 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2024  Cybionet - Ugly Codes Division
-# ## v1.7 - June 11, 2024
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
+# ## v1.8 - December 23, 2024
 
 
 # ############################################################################################
 # ## USERS
+
+# ## Permissions on 'passwd' files.
+passwdPerm() {
+    # ## Set 'passwd' file paths.
+    local passwdFiles=("/etc/passwd" "/etc/passwd-")
+
+     echo -e '\n\tPermissions on passwd files:'
+
+    # ## Loop to check each file.
+    for userFile in "${passwdFiles[@]}"; do
+        if [ -e "${userFile}" ]; then
+            # ## Retrieving permissions.
+            permissions=$(stat -c "%a" "${userFile}")
+	    file=$(echo "${userFile}" | awk -F '/' '{print $3}')
+
+            # ## Check if permissions are not 644.
+            if [ "${permissions}" -ne 644 ]; then
+		echo -e "\t\t\"${userFile}\" permission: \e[31mCritical\e[0m (${permissions})\n\t\t\t[\e[31mPlease set permission to '644' for ${file} file.\e[0m]"
+
+                critical=$((critical+1))
+            else
+		    echo -e "\t\tPermission on \"${file}\" file: \e[32mOk\e[0m (${permissions})"
+     		pass=$((pass+1))
+            fi
+        fi
+    done
+}
+
+
+# ## Permissions on 'shadow' files.
+shadowPerm() {
+    # ## Set 'shadow' file paths.
+    local shadowFiles=("/etc/shadow" "/etc/shadow-")
+
+     echo -e '\n\tPermissions on shadow files:'
+
+    # ## Loop to check each file.
+    for shwFile in "${shadowFiles[@]}"; do
+        if [ -e "${shwFile}" ]; then
+            # ## Retrieving permissions.
+            permissions=$(stat -c "%a" "${shwFile}")
+            file=$(echo "${shwFile}" | awk -F '/' '{print $3}')
+
+            # ## Check if permissions are not 640.
+            if [ "${permissions}" -ne 640 ]; then
+                echo -e "\t\t\"${shwFile}\" permission: \e[31mCritical\e[0m (${permissions})\n\t\t\t[\e[31mPlease set permission to '640' for ${file} file.\e[0m]"
+
+                critical=$((critical+1))
+            else
+                echo -e "\t\tPermission on \"${file}\" file: \e[32mOk\e[0m (${permissions})"
+     		pass=$((pass+1))
+            fi
+        fi
+    done
+}
 
 # ## Duplicate UID [6.2.16 Ensure no duplicate UIDs exist]
 function uniqueUID() {
@@ -124,6 +179,10 @@ loginDefs
 passMin
 
 unusedUsers
+
+# ## 
+passwdPerm
+shadowPerm
 
 
 # ## Return status.

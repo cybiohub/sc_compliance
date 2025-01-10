@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.12 - August 31, 2023
+# ## (c) 2004-2024  Cybionet - Ugly Codes Division
+# ## v1.13 - August 19, 2024
 
 
 # ############################################################################################
@@ -148,6 +148,18 @@ function repoCrontabPerm() {
  fi
 }
 
+function fileWithouOwner() {
+ fileWoOwner="$(/usr/bin/find / -nouser -nogroup -print 2>/dev/nul | wc -l)"	 
+
+ if [ "${fileWoOwner}" -eq 0 ]; then
+   echo -e "\tFiles without owner: \e[32mOk\e[0m (${fileWoOwner})"
+   pass=$((pass+1))
+ else
+   echo -e "\tFiles without owner: \e[31mCritical\e[0m (${fileWoOwner}) \n\t\t[\e[31mMake sure all files on your system have an owner or group owner.\e[0m]"
+   critical=$((critical+1))
+ fi
+}
+
 
 # ############################################################################################
 # ## EXECUTION
@@ -161,6 +173,10 @@ rebootNeeded
 needUpgrade
 removePackage
 sourcesRepo
+
+# ## Header.
+echo -e "\n\e[34m[FILES]\e[0m"
+fileWithouOwner
 
 # ## Header.
 echo -e "\n\e[34m[CRON]\e[0m"

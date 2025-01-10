@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2022  Cybionet - Ugly Codes Division
-# ## v1.0 - October 05, 2022
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
+# ## v1.1 - December 23, 2025
 
 
 # ############################################################################################
@@ -54,11 +54,12 @@ function acceptSourceRouteDefault() {
 # ## EXECUTION
 
 # ## Header.
-echo -e "\n\e[34m[NETWORKING]\e[0m"
+echo -e "\n\n\e[34m[NETWORKING]\e[0m"
 
 rpFilterDefault
 rpFilterAll
 acceptSourceRouteDefault
+
 
 # ## Return status.
 return "${pass}"

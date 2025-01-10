@@ -1,6 +1,6 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2024  Cybionet - Ugly Codes Division
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
 # ## v1.15 - June 11, 2024
 
 
@@ -55,7 +55,6 @@ function sshdBanner() {
 # ## Restricting which users can remotely access the system via SSH will help ensure that only authorized users access the system.
 function sshdAccessLimited() {
   sshdLimited=$(grep -ie 'AllowUsers' -ie 'AllowGroups' /etc/ssh/sshd_config | grep -v '^#' | awk -F " " '{print $2","}' | sed -z 's/\n//g' | sed 's/,$//g')
-# sshdLimited=$(grep -ie 'AllowUsers' -ie 'AllowGroups' /etc/ssh/sshd_config | grep -v '^#' | awk -F " " '{print $2}')
 
  echo -n -e "\n\tAllowed Access: "
 
@@ -66,7 +65,6 @@ function sshdAccessLimited() {
    echo -e "\e[32mOk\e[0m (${sshdLimited})"
    pass=$((pass+1))
  fi
-
 }
 
 # ## Check if the hmac-sha2-512 algorithm is suported for PowerShell script (Informal only).
@@ -398,13 +396,14 @@ function sshdParam() {
  fi
 }
 
+# ##
 function sshd2fa(){
  sshdMfa=$(</etc/pam.d/sshd grep 'pam_google_authenticator.so' | grep -c -v '#')
  echo -n -e "\n\tGoogle Authenticator: "
 
  if [[ "${sshdMfa}" -eq 0 ]]; then
    # ## apt-get install libpam-google-authenticator
-   echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider using MFA with libpam-google-authenticator on the SSHD service.\e[0m]"
+   echo -e "\e[33mWarning\e[0m \n\t\t[\e[33mPlease consider using MFA with libpam-google-authenticator on the SSHD service.\e[0m]"
    warning=$((warning+1))
  else
    if [[ "${sshdMfa}" -eq 1 ]]; then
@@ -412,7 +411,7 @@ function sshd2fa(){
      pass=$((pass+1))
    else
      # ## apt-get install libpam-google-authenticator
-     echo -e "\e[33mWarning\e[0m \n\t\t\t[\e[33mPlease consider using MFA on the SSHD service.\e[0m]"
+     echo -e "\e[33mWarning\e[0m \n\t\t[\e[33mPlease consider using MFA on the SSHD service.\e[0m]"
      warning=$((warning+1))
    fi
  fi
@@ -437,17 +436,6 @@ function checkAutoSSH() {
 }
 
 
-#function checkPackage() {
-# REQUIRED_PKG="${1}"
-#
-# if ! dpkg-query -s "${REQUIRED_PKG}" > /dev/null 2>&1; then
-#   dependency='0'
-# else
-#   dependency='1'
-# fi
-#}
-
-
 # ############################################################################################
 # ## EXECUTION
 
@@ -466,6 +454,7 @@ checkAutoSSH
 
 # ## ssh-audit
 sshdSshAudit
+
 
 # ## Return status.
 return "${pass}"

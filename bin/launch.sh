@@ -2,15 +2,15 @@
 #set -x
 # * **************************************************************************
 # *
-# * Author:        	(c) 2004-2023  Cybionet - Ugly Codes Division
+# * Author:        	(c) 2004-2025  Cybionet - Ugly Codes Division
 # *
 # * File:               launch.sh
-# * Version		0.1.7
+# * Version		0.1.8
 # *
-# * Description:        Script to check compliance of Ubuntu system.
+# * Description:        Script to check Ubuntu operating system compliance.
 # *
 # * Creation: April 09, 2021
-# * Change:   July 18, 2023
+# * Change:   December 23, 2024
 # *
 # * **************************************************************************
 # * Requirement
@@ -23,6 +23,7 @@
 #############################################################################################
 # ## MODULES
 
+# ## Modules [1=Enabled, 0=Disabled].
 declare -ir AUDIT=1
 declare -ir COMPLIANCE=1
 declare -ir GROUPSS=1
@@ -34,7 +35,7 @@ declare -ir SYSTEM=1
 declare -ir USERS=1
 declare -ir SUDO=1
 
-# ## Unused
+# ## Unused.
 declare -ir SECURITY=0
 declare -ir APACHE2=0
 
@@ -43,9 +44,8 @@ declare -ir APACHE2=0
 # ## VARIABLES
 
 # ## Application informations.
-appYear="$(date +%Y)"
-appHeader="(c) 2004-${appYear}  Cybionet - Ugly Codes Division"
-appVersion='0.1.7'
+appHeader="(c) 2004-$(date +%Y)  Cybionet - Ugly Codes Division"
+appVersion='0.1.8'
 
 # ## Declare initial status.
 declare -i critical=0
@@ -68,10 +68,10 @@ if [ "${1}" == 'version' ] ; then
  exit 0
 fi
 
-# ## Check if the script are running with sudo or under root user.
+# ## Check if the script are running with 'sudo' or under root user.
 if [ "${EUID}" -ne 0 ] ; then
   echo -e "\n\e[34m${appHeader}\e[0m\n"
-  echo -e "\n\n\n\e[33mCAUTION: This script must be run with sudo or as root.\e[0m"
+  echo -e "\n\n\n\e[33mCAUTION: This script must be run using 'sudo' or as root user.\e[0m"
   exit 0
 else
   echo -e "\n\e[34m${appHeader}\e[0m"
@@ -79,7 +79,7 @@ else
   echo -e ""
 fi
 
-# ## Check if bc package is installed.
+# ## Check if 'bc' package is installed.
 if ! dpkg-query -s 'bc' > /dev/null 2>&1; then
   echo -e "\n\n\n\e[33mCAUTION: Installing missing dependancy (bc).\e[0m"
   apt-get -y install bc

@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2024  Cybionet - Ugly Codes Division
-# ## v1.3 - February 02, 2024
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
+# ## v1.4 - December 23, 2024
 
 
 # ############################################################################################
@@ -64,21 +64,16 @@ function sudoLog() {
 # ## Access to the root account via su should be restricted to the 'root' group
 # ## [CCE-15047-4]
 function wheelGrpCheck() {
- #wheelGrp=$(grep pam_wheel.so /etc/pam.d/su | grep "^# auth" | grep "use_uid$" | wc -l)
- #grpWheel="$(awk -F':' '/wheel/{print $4}' /etc/group)"
-
  wheelGrp=$(grep 'required pam_wheel.so' /etc/pam.d/su | grep -v "^# auth" | grep "use_uid$" | wc -l)
  grpWheel=$(awk -F':' '/adm:x:4/{print $4}' /etc/group | awk -F ":" '{print $1}' | awk -F "," '{print NF}')
 
  echo -e -n "\n\tGroup wheel: "
 
  if (( "${wheelGrp}" == 1 )); then
-   echo -n -e "\e[33m${grpWheel}\e[0m \e[32mOk\e[0m ("
-   echo "${nbr})"
+   echo -n -e "\e[33m\e[0m \e[32mOk\e[0m (${nbr})"
    pass=$((pass+1))
  else
-   echo -n -e "\e[31m${grpWheel}\e[0m \e[31mCritical\e[0m ("
-   echo "${nbr})"
+   echo -n -e "\e[31m\e[0m \e[31mCritical\e[0m (${nbr})"
    echo -e "\t\t[\e[31mAdd 'auth required pam_wheel.so use_uid' to the /etc/pam.d/su file. And put users on wheel group.\e[0m]"
    critical=$((critical+1))
  fi
@@ -112,6 +107,7 @@ sudoLog
 sudoLogCheck
 wheelGrpCheck
 
+
 # ## Return status.
 return "${pass}"
 return "${warning}"
@@ -119,4 +115,3 @@ return "${critical}"
 return "${information}"
 
 # ## END
-

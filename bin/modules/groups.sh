@@ -1,11 +1,39 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.7 - June 28, 2023
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
+# ## v1.8 - December 23, 2024
 
 
 # ############################################################################################
 # ## GROUPS
+
+# ## Permissions on 'group' files.
+groupPerm() {
+    # ## Set 'group' file paths.
+    local groupFiles=("/etc/group" "/etc/group-")
+
+     echo -e "\n\n\tPermissions on group files:"
+
+    # ## Loop to check each file.
+    for grpFile in "${groupFiles[@]}"; do
+        if [ -e "${grpFile}" ]; then
+            # ## Retrieving permissions.
+            permissions=$(stat -c "%a" "${grpFile}")
+            file=$(echo "${grpFile}" | awk -F '/' '{print $3}')
+
+            # ## Check if permissions are not 644.
+            if [ "${permissions}" -ne 644 ]; then
+                echo -e "\t\t\"${grpFile}\" permission: \e[31mCritical\e[0m \n\t\t\t[\e[31mPlease set permission to '644' for ${file} file.\e[0m]"
+
+                critical=$((critical+1))
+            else
+                echo -e "\t\tPermission on \"${file}\" file: \e[32mOk\e[0m (${permissions})"
+                pass=$((pass+1))
+            fi
+        fi
+    done
+}
+
 
 # ## Duplicate GID [6.2.17 Ensure no duplicate GIDs exist]
 function uniqueGID() {
@@ -69,8 +97,7 @@ function groupCheck() {
  nbr=$(echo "${grpRestricted}" | awk -F ":" '{print $1}' | awk -F "," '{print NF}' )
 
  if (( "${nbr}" <= 3 )); then
-   echo -n -e "\e[33m${grpRestricted}\e[0m \e[32mOk\e[0m ("
-   echo "${nbr})"
+   echo -n -e "\e[33m${grpRestricted}\e[0m \e[32mOk\e[0m (${nbr})"
    pass=$((pass+1))
  else
    echo -e "\e[33m${grpRestricted}\e[0m (${nbr})"
@@ -91,6 +118,10 @@ groupIntegrity
 groupCheck
 
 uniqueGID
+
+# ##
+groupPerm
+
 
 # ## Return status.
 return "${pass}"

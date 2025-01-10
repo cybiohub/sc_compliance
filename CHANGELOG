@@ -1,3 +1,25 @@
+V0.1.16 - 2024-12-23
+
+## Added
+ - Added permission checking for passwd and shadow files. To prevent privilege escalation.
+ - Added permission checking for groups files. To prevent privilege escalation.
+
+## Fixed
+ - Correction in the result returned for the wheel group check (again).
+
+## Changed
+ - Adjust network module formatting.
+
+
+V0.1.15 - 2024-08-19
+
+## Added
+ - Added checking for files without owner or group owner.
+
+## Fixed
+ - Correction in the result returned for the wheel group check.
+
+
 V0.1.14 - 2024-06-11
 
 ## Added

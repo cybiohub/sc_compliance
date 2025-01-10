@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2023  Cybionet - Ugly Codes Division
-# ## v1.5 - December 10, 2023
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
+# ## v1.6 - December 23, 2025
 
 
 # ############################################################################################
@@ -25,11 +25,11 @@ function pkgWanted() {
  if [ -x "$(command -v lsb_release)" ]; then
    distro=$(lsb_release -is)
    if [ "$distro" = "Ubuntu" ]; then
-     declare -a checkPkgW=($(printf "${UWANTEDPKG}"))
+     declare -a checkPkgW=($(printf "${UWANTEDPKG}")
    elif [ "$distro" = "Debian" ]; then
-     declare -a checkPkgW=($(printf "${DWANTEDPKG}"))
+     declare -a checkPkgW=($(printf "${DWANTEDPKG}")
    else
-     declare -a checkPkgW=($(printf "${WANTEDPKG}"))
+     declare -a checkPkgW=($(printf "${WANTEDPKG}")
    fi
  fi
 
@@ -69,10 +69,6 @@ function pkgUnwanted() {
  done
 }
 
-
-
-
-
 # ## Checks for the presence of the package.
 function checkPackage() {
  REQUIRED_PKG="${1}"
@@ -93,6 +89,7 @@ echo -e "\n\e[34m[PACKAGES]\e[0m"
 # ## Check.
 pkgWanted
 pkgUnwanted
+
 
 # ## Return status.
 return "${pass}"

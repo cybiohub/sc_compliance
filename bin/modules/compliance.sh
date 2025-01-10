@@ -1,6 +1,6 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2024  Cybionet - Ugly Codes Division
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
 # ## v1.5 - May 22, 2024
 
 
@@ -11,11 +11,9 @@
 #readonly fileIssue='/etc/issue'
 #readonly fileIssueNet='/etc/issue.net' # ## Unused.
 
-
 # ##
 function authFileCheck() {
   find /var/backup/ -type f \( -name "passwd*" -o -name "gshadow*" -o -name "shadow*" -o -name "group*" \) 2>&-
-
 }
 
 # ##
@@ -26,8 +24,6 @@ function orderExecutionVul() {
    echo -e "\tLocal Bin Directory: \e[32mOk\e[0m (empty)"
    pass=$((pass+1))
  else
-   #echo -e "\tLocal Bin Directory: \e[33mNot Empty\e[0m\n\t\t[\e[33mBe aware of the order of execution of applications. Do not use \"/usr/local/bin/\" directory.\e[0m]"
-   #warning=$((warning+1))
    echo -e "\tLocal Bin Directory: \e[31mNot Empty\e[0m\n\t\t[\e[31mBe aware of the order of execution of applications. Do not use \"/usr/local/bin/\" directory.\e[0m]"
    critical=$((critical+1))
  fi
@@ -106,7 +102,6 @@ function popularityContest() {
 # ##
 function vimCheckBg() {
  declare -i vimBackground
- #vimBackground="$(cat /etc/vim/vimrc | grep "set background" | sed -e '/^"/d' | wc -l)"
  vimBackground="$(</etc/vim/vimrc grep "set background" | sed -e '/^"/d' | wc -l)"
 
  if [ "${vimBackground}" -eq 1 ]; then
@@ -151,6 +146,7 @@ echo -e "\n\e[34m[ESTHETIC]\e[0m"
 # ## Check.
 vimCheckBg
 popularityContest
+
 
 # ## Return status.
 return "${pass}"

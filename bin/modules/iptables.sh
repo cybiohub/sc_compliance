@@ -1,6 +1,6 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2023  Cybionet - Ugly Codes Division
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
 # ## v1.8 - November 05, 2023
 
 
@@ -270,7 +270,6 @@ done
 }
 
 function A_f2bFilters() {
- #declare -r wantedFilters='ssh,sshd,sshd-authfail,sshd-ddos,sshd-deny,sshd-proto'
  declare -a allFilters=($(fail2ban-client status | grep "Jail list" | grep -E -o "([-[:alnum:]]*, )*[-[:alnum:]]*$" | sed 's/,//g'))
 
  # ########################
@@ -368,6 +367,7 @@ ipv6Enable
 
 # ## Check Crowdsec and/or Fail2ban.
 pkgCrowdsec
+
 
 # ## Return status.
 return "${pass}"
