@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2025  Cybionet - Ugly Codes Division
-# ## v1.6 - December 23, 2025
+# ## v1.7 - January 10, 2025
 
 
 # ############################################################################################
@@ -25,11 +25,11 @@ function pkgWanted() {
  if [ -x "$(command -v lsb_release)" ]; then
    distro=$(lsb_release -is)
    if [ "$distro" = "Ubuntu" ]; then
-     declare -a checkPkgW=($(printf "${UWANTEDPKG}")
+     declare -a checkPkgW=($UWANTEDPKG)
    elif [ "$distro" = "Debian" ]; then
-     declare -a checkPkgW=($(printf "${DWANTEDPKG}")
+     declare -a checkPkgW=($DWANTEDPKG)
    else
-     declare -a checkPkgW=($(printf "${WANTEDPKG}")
+     declare -a checkPkgW=($WANTEDPKG)
    fi
  fi
 

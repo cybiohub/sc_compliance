@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2025  Cybionet - Ugly Codes Division
-# ## v1.8 - November 05, 2023
+# ## v1.9 - January 14, 2025
 
 
 # ############################################################################################
@@ -259,14 +259,13 @@ function pkgFail2ban() {
 
 
 function f2bFilters() {
- echo -e "\tFilters enabled: "
+ filters=($(fail2ban-client status | grep "Jail list" | grep -E -o "([-[:alnum:]]*, )*[-[:alnum:]]*$" | sed 's/,//g' | tr " " "\n"))
 
- filters=$(fail2ban-client status | grep "Jail list" | grep -E -o "([-[:alnum:]]*, )*[-[:alnum:]]*$" | sed 's/,//g' | tr " " "\n")
+ echo -e "\tFilters enabled: (${#filters[@]})"
 
-for x in $filters
-do
-echo -e "\t\t- [$x]"
-done
+ for x in "${filters[@]}"; do
+   echo -e "\t\t- [$x]"
+ done
 }
 
 function A_f2bFilters() {
