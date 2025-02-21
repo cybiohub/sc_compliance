@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2025  Cybionet - Ugly Codes Division
-# ## v1.9 - January 14, 2025
+# ## v1.10 - February 21, 2025
 
 
 # ############################################################################################
@@ -91,6 +91,44 @@ function outputRulesNotUsed() {
    echo -e "\t\t[${badOutRules}]"
    
    warning=$((warning+1))
+ fi
+}
+
+function inputSecurePorts() {
+ criticalPorts="25 2525 110 143 465 993 995 10050 389 22 2222"
+
+ echo -e "\n\tCritical listening ports:\n\t(Ports: ${criticalPorts})"
+
+ portPass=0
+ portCritical=0
+
+ # ## Convert iptables output to table to avoid subprocesses.
+ mapfile -t rules < <(iptables -S)
+
+ # ## Go through each iptables rule.
+ for line in "${rules[@]}"; do
+   if [[ "$line" == *"INPUT"* && "$line" == *"ACCEPT"* ]]; then
+     for port in $criticalPorts; do
+       if [[ "$line" == *"dport $port"* ]]; then
+         if [[ "$line" == *"-s"* ]]; then
+           echo -e "\t\t\033[32m✅\033[0m IP address source set for: $line"
+           ((portPass++))
+         else
+           echo -e "\t\t\033[31m❌\033[0m No source IP address defined for: $line"
+           ((portCritical++))
+         fi
+       fi
+     done
+   fi
+ done
+
+ # ## Displaying the summary.
+ if [ "${portCritical}" -gt 0 ]; then
+   critical=$((critical+1))
+ else
+   if [ "${portPass}" -gt 0 ]; then
+     pass=$((pass+1))
+   fi
  fi
 }
 
@@ -352,6 +390,7 @@ echo -e "\n\e[34m[IPTABLES]\e[0m"
 iptablesCheck
 inputRulesNotUsed
 outputRulesNotUsed
+inputSecurePorts
 
 # ## Header.
 echo -e "\n\e[34m[IPTABLES FILTERING]\e[0m"

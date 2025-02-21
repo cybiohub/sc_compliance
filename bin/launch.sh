@@ -5,12 +5,12 @@
 # * Author:        	(c) 2004-2025  Cybionet - Ugly Codes Division
 # *
 # * File:               launch.sh
-# * Version		0.1.8
+# * Version		0.1.18
 # *
 # * Description:        Script to check Ubuntu operating system compliance.
 # *
 # * Creation: April 09, 2021
-# * Change:   December 23, 2024
+# * Change:   February 21, 2025
 # *
 # * **************************************************************************
 # * Requirement
@@ -71,7 +71,7 @@ fi
 # ## Check if the script are running with 'sudo' or under root user.
 if [ "${EUID}" -ne 0 ] ; then
   echo -e "\n\e[34m${appHeader}\e[0m\n"
-  echo -e "\n\n\n\e[33mCAUTION: This script must be run using 'sudo' or as root user.\e[0m"
+  echo -e "  \e[33mCAUTION: This script must be run using 'sudo' or as root user.\e[0m\n"
   exit 0
 else
   echo -e "\n\e[34m${appHeader}\e[0m"

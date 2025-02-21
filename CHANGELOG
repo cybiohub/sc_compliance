@@ -1,3 +1,13 @@
+
+V0.1.18 - 2025-02-21
+
+## Added
+  - Added checking of critical ports in inputs if they have a specified source IP address.
+
+## Fixed
+  - Adjust the warning presentation that the script must be run as root or sudo.
+
+
 V0.1.17 - 2025-01-14
 
 ## Added
