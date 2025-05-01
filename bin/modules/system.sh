@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2024  Cybionet - Ugly Codes Division
-# ## v1.13 - August 19, 2024
+# ## (c) 2004-2025  Cybionet - Ugly Codes Division
+# ## v1.14 - February 24, 2025
 
 
 # ############################################################################################
@@ -149,17 +149,18 @@ function repoCrontabPerm() {
 }
 
 function fileWithouOwner() {
- fileWoOwner="$(/usr/bin/find / -nouser -nogroup -print 2>/dev/nul | wc -l)"	 
+ declare -a fileWoOwner
+ mapfile -t fileWoOwner < <(/usr/bin/find / -nouser -nogroup -print 2>/dev/null)
 
- if [ "${fileWoOwner}" -eq 0 ]; then
-   echo -e "\tFiles without owner: \e[32mOk\e[0m (${fileWoOwner})"
+ if [ "${#fileWoOwner[@]}" -eq 0 ]; then
+   echo -e "\tFiles without owner: \e[32mOk\e[0m (${#fileWoOwner[@]})"
    pass=$((pass+1))
  else
-   echo -e "\tFiles without owner: \e[31mCritical\e[0m (${fileWoOwner}) \n\t\t[\e[31mMake sure all files on your system have an owner or group owner.\e[0m]"
+   echo -e "\tFiles without owner: \e[31mCritical\e[0m (${#fileWoOwner[@]}) \n\t\t[\e[31mMake sure all files on your system have an owner or group owner.\e[0m]"
+   printf '\t\t- %s\n' "${fileWoOwner[@]}"
    critical=$((critical+1))
  fi
 }
-
 
 # ############################################################################################
 # ## EXECUTION

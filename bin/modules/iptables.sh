@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2025  Cybionet - Ugly Codes Division
-# ## v1.10 - February 21, 2025
+# ## v1.11 - May 01, 2025
 
 
 # ############################################################################################
@@ -95,9 +95,9 @@ function outputRulesNotUsed() {
 }
 
 function inputSecurePorts() {
- criticalPorts="25 2525 110 143 465 993 995 10050 389 22 2222"
+ criticalPorts="25 2525 110 143 465 587 993 995 10050 10051 389 22 2222"
 
- echo -e "\n\tCritical listening ports:\n\t(Ports: ${criticalPorts})"
+ echo -e "\n\tCritical listening ports:\n\t(Checked ports: ${criticalPorts})"
 
  portPass=0
  portCritical=0
