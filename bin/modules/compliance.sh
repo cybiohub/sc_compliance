@@ -18,16 +18,19 @@ function authFileCheck() {
 
 # ##
 function orderExecutionVul() {
- declare -i isEmpty
- isEmpty="$(find /usr/local/bin/ -type f -printf '%T@ %f\n' | cut -d' ' -f2- | wc -l)"
- if [ "${isEmpty}" -eq 0 ]; then
-   echo -e "\tLocal Bin Directory: \e[32mOk\e[0m (empty)"
-   pass=$((pass+1))
- else
-   echo -e "\tLocal Bin Directory: \e[31mNot Empty\e[0m\n\t\t[\e[31mBe aware of the order of execution of applications. Do not use \"/usr/local/bin/\" directory.\e[0m]"
-   critical=$((critical+1))
+ if [ -d /usr/local/bin/ ]; then
+   declare -i isEmpty
+   isEmpty="$(find /usr/local/bin/ -type f -printf '%T@ %f\n' | cut -d' ' -f2- | wc -l)"
+   if [ "${isEmpty}" -eq 0 ]; then
+     echo -e "\tLocal Bin Directory: \e[32mOk\e[0m (empty)"
+     pass=$((pass+1))
+   else
+     echo -e "\tLocal Bin Directory: \e[31mNot Empty\e[0m\n\t\t[\e[31mBe aware of the order of execution of applications. Do not use \"/usr/local/bin/\" directory.\e[0m]"
+     critical=$((critical+1))
+   fi
  fi
 }
+ 
 
 # ##
 function isEnableHistory() {

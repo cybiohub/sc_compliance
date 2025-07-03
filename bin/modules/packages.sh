@@ -7,7 +7,7 @@
 # ############################################################################################
 # ## VARIABLES
 
-readonly UNWANTEDPKG='minidlna nis nmap rsh-client rsh-server samba snmpd talk tcpdump telnet'
+readonly UNWANTEDPKG='minidlna nis nmap rsh-client rsh-server samba snmpd talk tcpdump telnet ttyd'
 # ## Other Linux OS.
 readonly WANTEDPKG='crowdsec lynis aide'
 # ## Debian Linux OS.

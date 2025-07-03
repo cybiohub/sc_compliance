@@ -1,27 +1,54 @@
 #! /bin/bash
 #set -x
 # ## (c) 2004-2025  Cybionet - Ugly Codes Division
-# ## v1.14 - February 24, 2025
+# ## v1.15 - July 03, 2025
 
 
 # ############################################################################################
 # ## SYSTEM
 
 # ## Retrieves the OS version.
-function actualVersion {
- osVersion="$(hostnamectl | grep "Operating System" | awk -F  ":" '{print $2}' | sed 's/^ //g')"
+function actualVersion() {
+  # ## Récupération de la version complète d'Ubuntu.
+  osVersion="$(hostnamectl | grep "Operating System" | awk -F  ":" '{print $2}' | sed 's/^ //g')"
+  ubuntuVersion="$(lsb_release -rs)"
+  codename="$(lsb_release -cs)"
 
- if [[ "${osVersion}" =~ ^Ubuntu* ]]; then
-   doVersion="$(do-release-upgrade -c | grep "New release" | awk -F " " '{print $3}' | sed 's/^.//g')"
-   
-   if [ -n "${doVersion}" ]; then
-     echo -e "\tOS version: \e[31m${osVersion}\e[0m"
-     echo -e "\t\t[\e[31mCheck a new version is available: ${doVersion}\e[0m]\n"
-     critical=$((critical+1))
-   else
-     echo -e "\tOS version: ${osVersion}\n"
-   fi
- fi
+  # ## Tableau des versions LTS et leurs dates de fin de vie.
+  declare -A eol_dates
+  eol_dates["16.04"]="2021-04-30"
+  eol_dates["18.04"]="2023-05-31"
+  eol_dates["20.04"]="2025-05-31"
+  eol_dates["22.04"]="2027-04-30"
+  eol_dates["24.04"]="2029-04-30"
+
+  if [[ "${osVersion}" =~ ^Ubuntu.* ]]; then
+    # ## Check if a newer version is available.
+    doVersion="$(do-release-upgrade -c | grep "New release" | awk -F " " '{print $3}' | sed 's/^.//g')"
+
+    # ## Check if the current version is in EOL.
+    eol_date="${eol_dates[$ubuntuVersion]}"
+    current_date=$(date +%Y-%m-%d)
+
+    if [[ -n "${eol_date}" && "${current_date}" > "${eol_date}" ]]; then
+      eol_notice="\t\t[\e[31mWARNING: This version is End Of Life since ${eol_date}\e[0m]"
+      critical=$((critical+1))
+    elif [[ -n "${eol_date}" ]]; then
+      eol_notice="[EOL Date: ${eol_date}]"
+    else
+      eol_notice="[EOL Date: Unknown]"
+    fi
+
+    # ## Final display.
+    if [[ -n "${doVersion}" ]]; then
+      echo -n -e "\tOS version: \e[31m${osVersion}\e[0m"
+      echo -e " ${eol_notice}"
+      echo -e "\t\t[\e[31mNew version available: ${doVersion}\e[0m]\n"
+      critical=$((critical+1))
+    else
+      echo -e "\tOS version: ${osVersion}"
+    fi
+  fi
 }
 
 # ## Check if the system requires a reboot.

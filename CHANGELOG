@@ -1,3 +1,9 @@
+V0.1.21 - 2025-07-03
+## Added
+  - Add checking for the presence of the ttyd package.
+  - Add EOL in version check for Ubuntu LTS server.
+
+
 V0.1.20 - 2025-05-01
 ## Added
   - Add more port in 'inputSecurePorts' list.
