@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2025  Cybionet - Ugly Codes Division
-# ## v1.11 - May 01, 2025
+# ## (c) 2004-2026  Cybionet - Ugly Codes Division
+# ## v1.12 - December 01, 2026
 
 
 # ############################################################################################
@@ -97,13 +97,13 @@ function outputRulesNotUsed() {
 function inputSecurePorts() {
  criticalPorts="25 2525 110 143 465 587 993 995 10050 10051 389 22 2222"
 
- echo -e "\n\tCritical listening ports:\n\t(Checked ports: ${criticalPorts})"
-
  portPass=0
  portCritical=0
 
  # ## Convert iptables output to table to avoid subprocesses.
  mapfile -t rules < <(iptables -S)
+
+ echo -e "\n\tCritical listening ports:\n\t(Checked ports: ${criticalPorts})"
 
  # ## Go through each iptables rule.
  for line in "${rules[@]}"; do
@@ -111,16 +111,18 @@ function inputSecurePorts() {
      for port in $criticalPorts; do
        if [[ "$line" == *"dport $port"* ]]; then
          if [[ "$line" == *"-s"* ]]; then
-           echo -e "\t\t\033[32m✅\033[0m IP address source set for: $line"
+           echo -e "\t\t\e[32m✅\e[0m IP address source set for: $line"
            ((portPass++))
          else
-           echo -e "\t\t\033[31m❌\033[0m No source IP address defined for: $line"
+           echo -e "\t\t\e[31m❌\e[0m No source IP address defined for: $line"
            ((portCritical++))
          fi
        fi
      done
    fi
  done
+
+ echo -e "\t\e[34mEnd of verification - If If the result is empty then no rule matches.\e[0m"
 
  # ## Displaying the summary.
  if [ "${portCritical}" -gt 0 ]; then

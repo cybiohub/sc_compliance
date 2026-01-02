@@ -1,13 +1,13 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2025  Cybionet - Ugly Codes Division
-# ## v1.7 - January 10, 2025
+# ## (c) 2004-2026  Cybionet - Ugly Codes Division
+# ## v1.9 - January 01, 2026
 
 
 # ############################################################################################
 # ## VARIABLES
 
-readonly UNWANTEDPKG='minidlna nis nmap rsh-client rsh-server samba snmpd talk tcpdump telnet ttyd'
+readonly UNWANTEDPKG='autossh ftp minidlna nis nmap rsh-client rsh-server samba snmpd talk tcpdump telnet ttyd'
 # ## Other Linux OS.
 readonly WANTEDPKG='crowdsec lynis aide'
 # ## Debian Linux OS.

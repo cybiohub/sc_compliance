@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2025  Cybionet - Ugly Codes Division
-# ## v1.15 - July 03, 2025
+# ## (c) 2004-2026  Cybionet - Ugly Codes Division
+# ## v1.18 - January 01, 2026
 
 
 # ############################################################################################
@@ -9,46 +9,48 @@
 
 # ## Retrieves the OS version.
 function actualVersion() {
-  # ## Récupération de la version complète d'Ubuntu.
-  osVersion="$(hostnamectl | grep "Operating System" | awk -F  ":" '{print $2}' | sed 's/^ //g')"
-  ubuntuVersion="$(lsb_release -rs)"
-  codename="$(lsb_release -cs)"
+ # ## Retrieving the full version of Ubuntu.
+ osVersion="$(hostnamectl | grep "Operating System" | awk -F  ":" '{print $2}' | sed 's/^ //g')"
+ ubuntuVersion="$(lsb_release -rs)"
+ codename="$(lsb_release -cs)"
 
-  # ## Tableau des versions LTS et leurs dates de fin de vie.
-  declare -A eol_dates
-  eol_dates["16.04"]="2021-04-30"
-  eol_dates["18.04"]="2023-05-31"
-  eol_dates["20.04"]="2025-05-31"
-  eol_dates["22.04"]="2027-04-30"
-  eol_dates["24.04"]="2029-04-30"
+ # ## Table of LTS versions and their end-of-life dates.
+ declare -A eol_dates
+ eol_dates["16.04"]="2021-04-30"
+ eol_dates["18.04"]="2023-05-31"
+ eol_dates["20.04"]="2025-05-31"
+ eol_dates["22.04"]="2027-04-30"
+ eol_dates["24.04"]="2029-04-30"
 
-  if [[ "${osVersion}" =~ ^Ubuntu.* ]]; then
-    # ## Check if a newer version is available.
-    doVersion="$(do-release-upgrade -c | grep "New release" | awk -F " " '{print $3}' | sed 's/^.//g')"
+ if [[ "${osVersion}" =~ ^Ubuntu.* ]]; then
+   # ## Check if a newer version is available.
+   doVersion="$(do-release-upgrade -c | grep "New release" | awk -F " " '{print $3}' | sed 's/^.//g')"
 
-    # ## Check if the current version is in EOL.
-    eol_date="${eol_dates[$ubuntuVersion]}"
-    current_date=$(date +%Y-%m-%d)
+   # ## Check if the current version is in EOL.
+   eol_date="${eol_dates[$ubuntuVersion]}"
+   current_date=$(date +%Y-%m-%d)
 
-    if [[ -n "${eol_date}" && "${current_date}" > "${eol_date}" ]]; then
-      eol_notice="\t\t[\e[31mWARNING: This version is End Of Life since ${eol_date}\e[0m]"
-      critical=$((critical+1))
-    elif [[ -n "${eol_date}" ]]; then
-      eol_notice="[EOL Date: ${eol_date}]"
-    else
-      eol_notice="[EOL Date: Unknown]"
-    fi
+   if [[ -n "${eol_date}" && "${current_date}" > "${eol_date}" ]]; then
+     eol_notice="\t\t[\e[31mWARNING: This version is End Of Life since ${eol_date}\e[0m]"
+     critical=$((critical+1))
+   elif [[ -n "${eol_date}" ]]; then
+     eol_notice="[EOL Date: ${eol_date}]"
+   else
+     eol_notice="[EOL Date: Unknown]"
+   fi
 
-    # ## Final display.
-    if [[ -n "${doVersion}" ]]; then
-      echo -n -e "\tOS version: \e[31m${osVersion}\e[0m"
-      echo -e " ${eol_notice}"
-      echo -e "\t\t[\e[31mNew version available: ${doVersion}\e[0m]\n"
-      critical=$((critical+1))
-    else
-      echo -e "\tOS version: ${osVersion}"
-    fi
-  fi
+   # ## Final display.
+   if [[ -n "${doVersion}" ]]; then
+     echo -n -e "\tOS version: \e[31m${osVersion}\e[0m"
+     echo -e " ${eol_notice}"
+     echo -e "\t\t[\e[31mNew version available: ${doVersion}\e[0m]\n"
+     critical=$((critical+1))
+   else
+     echo -e "\tOS version: ${osVersion}"
+   fi
+ else
+   echo -e "\tOS version: ${osVersion}"
+ fi
 }
 
 # ## Check if the system requires a reboot.
@@ -64,14 +66,29 @@ function rebootNeeded() {
 }
 
 # ## System need upgrade.
-# ## Result: 0 (Ok), 1 (Need Upgrade)
 function needUpgrade() {
- declare -i checkNumber
- checkNumber="$(apt-get -s dist-upgrade | grep 'upgraded,' | sed 's/[^0-9]*//g')"
- if [ "${checkNumber}" -ne 0 ]; then
+ # ## Retrieves the apt upgrade summary, without installing.
+ OUT=$(apt-get -s upgrade)
+
+ # ## Count the occurrences.
+ upGraded=$(echo "${OUT}" | grep -Eo '[0-9]+ upgraded' | awk '{print $1}')
+ notUpGraded=$(echo "${OUT}" | grep -Eo '[0-9]+ not upgraded' | awk '{print $1}')
+
+ # ## Default values if empty.
+ upGraded=${upGraded:-0}
+ notUpGraded=${notUpGraded:-0}
+
+ # ## Return rules.
+ if [ "$upGraded" -gt 0 ]; then
+   # ## There is at least 1 package to update.
    echo -e '\tUpgrade Packages Available: \e[33mYes\e[0m'
    warning=$((warning+1))
+ elif [ "$notUpGraded" -gt 0 ]; then
+   # ## None upgraded, but there are "not upgraded" ones.
+   echo -e '\tUpgrade packages listed, but not available.: \e[32mYes\e[0m'
+   pass=$((pass+1))
  else
+   # ## No upgrades or not-upgraded.
    echo -e '\tUpgrade Packages Available: \e[32mNo\e[0m'
    pass=$((pass+1))
  fi
@@ -109,7 +126,8 @@ function sourcesRepo() {
  fi
 
  # ## Check files in sourced.list.d.
- sourceFiles=$(find /etc/apt/sources.list.d/ -maxdepth 1 -type f | wc -l)
+ sourceFiles=$(find /etc/apt/sources.list.d/ \( -name "*.list" -o -name "*.source" \) -maxdepth 1 -type f 2>/dev/null | wc -l)
+
 
  if [ "${sourceFiles}" -gt 0 ]; then
    for file in /etc/apt/sources.list.d/*.list
@@ -127,11 +145,11 @@ function sourcesRepo() {
      fi
    done
 
-for file in /etc/apt/sources.list.d/*
+ for file in /etc/apt/sources.list.d/*
    do
-       mySource="${file}"
-       sourceDStatus=$(ls "${file}" | grep 'distUpgrade$\|save$' | wc -l)
-       sourceFile=$( echo "${mySource}" | awk -F "/" '{print $5}')
+     mySource="${file}"
+      sourceDStatus=$(grep -c 'distUpgrade$\|save$' "${file}")
+      sourceFile=$( echo "${mySource}" | awk -F "/" '{print $5}')
 
      if [ "${sourceDStatus}" -ne 0 ]; then
        echo -e "\t\tSource \"${sourceFile}\": \e[33mWarning\e[0m"
@@ -140,8 +158,18 @@ for file in /etc/apt/sources.list.d/*
      fi
    done
  fi
-}
 
+
+ sourceFailed=$(ls /var/lib/apt/lists/partial | grep -c -e "FAILED$")
+
+ if [ "${sourceFailed}" -ne 0 ]; then
+   echo -e "\t\tSource Failed: \e[31mCritical\e[0m (${sourceFailed})"
+   critical=$((critical+1))
+ else
+   echo -e "\t\tSource Failed: \e[32mNone\e[0m (${sourceFailed})"
+   pass=$((pass+1))
+ fi
+}
 
 function repoCronPerm() {
  # ## Sub-Header.
@@ -167,10 +195,10 @@ function repoCrontabPerm() {
  crontabPerm="$(stat -c "%a" /etc/crontab)"	 
 
  if [ "${crontabPerm}" -eq 600 ]; then
-   echo -e "\t\tcrontab file: \e[32mOk\e[0m (${crontabPerm})"
+   echo -e -n "\t\tcrontab file: \e[32mOk\e[0m (${crontabPerm})\n"
    pass=$((pass+1))
  else
-   echo -e "\n\t\tcrontab file: \e[31mCritical\e[0m (${crontabPerm}) \n\t\t\t[\e[31mEnsure permissions on /etc/crontab are configured to 600.\e[0m]"
+   echo -e -n "\t\tcrontab file: \e[31mCritical\e[0m (${crontabPerm}) \n\t\t\t[\e[31mEnsure permissions on /etc/crontab are configured to 600.\e[0m]\n"
    critical=$((critical+1))
  fi
 }
@@ -189,8 +217,19 @@ function fileWithouOwner() {
  fi
 }
 
+function runAsRoot() {
+ # ## Check if the script are running with sudo or under root user.
+ if [ "${EUID}" -ne 0 ] ; then
+  echo -e "\n\e[33mCAUTION: The 'system module' must be run with sudo or as root.\e[0m"
+ fi
+}
+
+
 # ############################################################################################
 # ## EXECUTION
+
+# ##
+runAsRoot
 
 # ## Header.
 echo -e "\n\e[34m[OPERATION SYSTEM]\e[0m"

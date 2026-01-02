@@ -6,16 +6,16 @@ This script is used to check compliance of Ubuntu system. Use [lynis](https://gi
 
 Here are some major points that this script will evaluate.
 
-- Audit
-- Compliance
-- Groups
-- Iptables
-- Network
-- Packages
-- Sshd
-- Sudo
-- System
-- Users
+  - Audit
+  - Compliance
+  - Groups
+  - Iptables
+  - Network
+  - Packages
+  - Sshd
+  - Sudo
+  - System
+  - Users
 
 ---
 [logo]: ./md/logo.png "Cybionet"

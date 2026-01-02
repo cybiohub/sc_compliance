@@ -1,3 +1,28 @@
+V0.1.23 - 2026-01-01
+## Added
+  - Add checking for the presence of the ftp package (cis 2.2.6, pci_dss_v4.0 1.2.5,2.2.4,6.4.1, soc_2 CC6.3,CC6.6)
+
+## Fixed
+  - Disabling and transferring the checkAutoSSH check to the package module.
+
+  - In the sshd module, minor adjustment to the display of the result of the 'sshdPowerShell' and 'sshX11Forw' functions.
+
+  - In the sshd module, adjustment in error handling of the 'sshdMacs' and 'sshdPowerShell' functions.
+
+  - In the system module, minor adjustment to the display of the result of the repoCrontabPerm function.
+
+  - In the iptables module, adjustment to the display of the result of the inputSecurePorts function when no sensitive port has been found.
+
+
+V0.1.22 - 2025-12-16
+## Added
+  - Checking if a repository file is in 'failed' mode.
+
+## Fixed
+  - Correction of the 'needUpgrade' function.
+  - Error correction if there is no 'list' ou 'source' file in the /etc/apt/sources.list.d directory.
+
+
 V0.1.21 - 2025-07-03
 ## Added
   - Add checking for the presence of the ttyd package.

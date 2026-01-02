@@ -1,7 +1,7 @@
 #! /bin/bash
 #set -x
-# ## (c) 2004-2025  Cybionet - Ugly Codes Division
-# ## v1.15 - June 11, 2024
+# ## (c) 2004-2026  Cybionet - Ugly Codes Division
+# ## v1.16 - January 01, 2026
 
 
 # ############################################################################################
@@ -22,7 +22,7 @@ function sshdConfPerm() {
 
 # ## MD5 and 96-bit MAC algorithms are considered weak and have been shown to increase exploitability in SSH downgrade attacks.
 function sshdMacs() {
- hmacs="$(sshd -T | grep -i 'mac' | grep -ic "hmac-md5\|hmac-md5-96")"
+ hmacs=$(sshd -T 2>/dev/null | grep -i 'mac' | grep -ic "hmac-md5\|hmac-md5-96")
 
  if [ "${hmacs}" -le 1 ]; then
    echo -e "\n\tApproved MAC algorithms: \e[32mOk\e[0m"
@@ -69,13 +69,13 @@ function sshdAccessLimited() {
 
 # ## Check if the hmac-sha2-512 algorithm is suported for PowerShell script (Informal only).
 function sshdPowerShell() {
- hmacsPS=$(sshd -T | grep -i 'mac' | grep -ic "hmac-sha2-512")
+ hmacsPS=$(sshd -T 2>/dev/null | grep -i 'mac' | grep -ic "hmac-sha2-512")
 
  if [ "${hmacsPS}" -ge 1 ]; then
-   echo -e "\tSupport MAC algorithms for PowerShell: \e[32mOk\e[0m (hmac-sha2-512)"
+   echo -e "\n\tSupport MAC algorithms for PowerShell: \e[32mYes\e[0m (hmac-sha2-512)"
    information=$((information+1))
  else
-   echo -e "\tSupport MAC algorithms for PowerShell: \e[34mNo\e[0m (hmac-sha2-512)"
+   echo -e "\n\tSupport MAC algorithms for PowerShell: \e[34mNo\e[0m (hmac-sha2-512)"
    information=$((information+1))
  fi
 }
@@ -189,7 +189,7 @@ function sshdParam() {
      echo -e "\e[32mOk\e[0m (${sshX11Forw})"
      pass=$((pass+1))
    else
-     echo -e "\e[31mCritical\e[0m (${sshX11Forw}) \n\t\t\t[\e[31mMake sure to assign the value \"No\" to the \"X11Forwarding\" parameter.\e[0m]"
+     echo -e "\e[31mCritical\e[0m \n\t\t\t[\e[31mMake sure to assign the value \"No\" to the \"X11Forwarding\" parameter.\e[0m]"
      critical=$((critical+1))
    fi
  fi
@@ -421,7 +421,7 @@ function sshd2fa(){
 function checkAutoSSH() {
  REQUIRED_PKG="${1}"
  if dpkg-query -s "autossh" > /dev/null 2>&1; then
-   isRunning="$(ps -e | grep -c autossh)"
+   isRunning="$(pgrep -c autossh)"
 
    if [ "${isRunning}" -gt 0 ];then
      echo -e "\n\tAutossh: \e[31mCritical\e[0m"
@@ -450,7 +450,7 @@ sshdParam
 sshdBanner
 sshdMacs
 sshdPowerShell
-checkAutoSSH
+#checkAutoSSH
 
 # ## ssh-audit
 sshdSshAudit

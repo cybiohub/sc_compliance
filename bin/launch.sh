@@ -45,7 +45,7 @@ declare -ir APACHE2=0
 
 # ## Application informations.
 appHeader="(c) 2004-$(date +%Y)  Cybionet - Ugly Codes Division"
-appVersion='0.1.8'
+appVersion='0.1.18'
 
 # ## Declare initial status.
 declare -i critical=0
